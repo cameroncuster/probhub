@@ -2,94 +2,78 @@
   import { onMount } from 'svelte';
   import { fetchProblems } from '$lib/services/codeforces';
 
-  // Sample problems data as fallback
-  let problems = [
-    {
-      id: '1A',
-      name: 'Theatre Square',
-      tags: ['math'],
-      difficulty: 1000,
-      url: 'https://codeforces.com/problemset/problem/1/A',
-      solved: 187000,
-      category: 'easy'
-    },
-    {
-      id: '4A',
-      name: 'Watermelon',
-      tags: ['brute force', 'math'],
-      difficulty: 800,
-      url: 'https://codeforces.com/problemset/problem/4/A',
-      solved: 250000,
-      category: 'easy'
-    },
-    {
-      id: '71A',
-      name: 'Way Too Long Words',
-      tags: ['strings'],
-      difficulty: 800,
-      url: 'https://codeforces.com/problemset/problem/71/A',
-      solved: 230000,
-      category: 'easy'
-    },
-    {
-      id: '158A',
-      name: 'Next Round',
-      tags: ['implementation'],
-      difficulty: 800,
-      url: 'https://codeforces.com/problemset/problem/158/A',
-      solved: 210000,
-      category: 'easy'
-    },
-    {
-      id: '231A',
-      name: 'Team',
-      tags: ['brute force', 'greedy'],
-      difficulty: 800,
-      url: 'https://codeforces.com/problemset/problem/231/A',
-      solved: 200000,
-      category: 'easy'
-    }
-  ];
-
+  let problems = [];
   let loading = false;
   let error = null;
 
-  // Function to load problems with localStorage caching
+  // Function to get the rating color based on difficulty
+  function getRatingColor(rating) {
+    if (rating >= 2900) return 'legendary-grandmaster';
+    if (rating >= 2600) return 'international-grandmaster';
+    if (rating >= 2400) return 'grandmaster';
+    if (rating >= 2300) return 'international-master';
+    if (rating >= 2200) return 'master';
+    if (rating >= 1900) return 'candidate-master';
+    if (rating >= 1600) return 'expert';
+    if (rating >= 1400) return 'specialist';
+    if (rating >= 1200) return 'pupil';
+    return 'newbie';
+  }
+
+  // Function to get the rating tier name
+  function getRatingTierName(rating) {
+    if (rating >= 2900) return 'Legendary Grandmaster';
+    if (rating >= 2600) return 'International Grandmaster';
+    if (rating >= 2400) return 'Grandmaster';
+    if (rating >= 2300) return 'International Master';
+    if (rating >= 2200) return 'Master';
+    if (rating >= 1900) return 'Candidate Master';
+    if (rating >= 1600) return 'Expert';
+    if (rating >= 1400) return 'Specialist';
+    if (rating >= 1200) return 'Pupil';
+    return 'Newbie';
+  }
+
+  // Function to format date to a more readable format
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  }
+
+  // Function to handle like/dislike actions
+  function handleLike(problemId, isLike) {
+    problems = problems.map((problem) => {
+      if (problem.id === problemId) {
+        if (isLike) {
+          return { ...problem, likes: problem.likes + 1 };
+        } else {
+          return { ...problem, dislikes: problem.dislikes + 1 };
+        }
+      }
+      return problem;
+    });
+  }
+
+  // Function to load problems
   async function loadProblems() {
     loading = true;
     error = null;
 
     try {
-      // Check if we have cached problems in localStorage
-      const cachedProblems = localStorage.getItem('probhub_problems');
-      const cacheTimestamp = localStorage.getItem('probhub_cache_timestamp');
+      const fetchedProblems = await fetchProblems();
 
-      // Use cache if it exists and is less than 24 hours old
-      const cacheAge = cacheTimestamp ? Date.now() - parseInt(cacheTimestamp) : Infinity;
-      const cacheValid = cacheAge < 24 * 60 * 60 * 1000; // 24 hours
-
-      if (cachedProblems && cacheValid) {
-        problems = JSON.parse(cachedProblems).slice(100, 200); // Only use 100
-        loading = false;
-        return;
-      }
-
-      // If no valid cache, fetch from API
-      const apiProblems = await fetchProblems();
-
-      if (apiProblems && apiProblems.length > 0) {
-        // Store all problems in localStorage
-        localStorage.setItem('probhub_problems', JSON.stringify(apiProblems));
-        localStorage.setItem('probhub_cache_timestamp', Date.now().toString());
-
-        // Only display first 100
-        problems = apiProblems.slice(100, 200);
+      if (fetchedProblems && fetchedProblems.length > 0) {
+        problems = fetchedProblems;
       }
 
       loading = false;
     } catch (err) {
       console.error('Error loading problems:', err);
-      error = 'Failed to load problems from API. Using sample data instead.';
+      error = 'Failed to load problems.';
       loading = false;
     }
   }
@@ -115,25 +99,29 @@
       <table class="table">
         <thead>
           <tr>
-            <th>ID</th>
             <th>Name</th>
             <th>Difficulty</th>
             <th>Tags</th>
-            <th>Solved By</th>
+            <th>Date Added</th>
+            <th>Added By</th>
+            <th>Feedback</th>
           </tr>
         </thead>
         <tbody>
           {#each problems as problem}
             <tr>
-              <td>{problem.id}</td>
               <td>
                 <a href={problem.url} target="_blank" rel="noopener noreferrer">
                   {problem.name}
                 </a>
               </td>
               <td>
-                <span class={`badge badge-${problem.category}`}>
-                  {problem.difficulty || 'N/A'}
+                <span
+                  class="rating-badge"
+                  style="background-color: var(--{getRatingColor(problem.difficulty)}-color)"
+                  title="{getRatingTierName(problem.difficulty)} (Rating: {problem.difficulty})"
+                >
+                  {problem.difficulty}
                 </span>
               </td>
               <td>
@@ -143,7 +131,62 @@
                   {/each}
                 </div>
               </td>
-              <td>{problem.solved ? problem.solved.toLocaleString() : 'N/A'}</td>
+              <td>{formatDate(problem.dateAdded)}</td>
+              <td>
+                <a href={problem.addedByUrl} target="_blank" rel="noopener noreferrer">
+                  @{problem.addedBy}
+                </a>
+              </td>
+              <td>
+                <div class="feedback-buttons">
+                  <button
+                    class="like-button"
+                    on:click={() => handleLike(problem.id, true)}
+                    title="Like this problem"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="thumbs-up"
+                    >
+                      <path
+                        d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"
+                      ></path>
+                    </svg>
+                    <span>{problem.likes}</span>
+                  </button>
+                  <button
+                    class="dislike-button"
+                    on:click={() => handleLike(problem.id, false)}
+                    title="Dislike this problem"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="thumbs-down"
+                    >
+                      <path
+                        d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"
+                      ></path>
+                    </svg>
+                    <span>{problem.dislikes}</span>
+                  </button>
+                </div>
+              </td>
             </tr>
           {/each}
         </tbody>
@@ -189,6 +232,63 @@
     border-radius: 3px;
   }
 
+  .rating-badge {
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    color: white;
+    font-weight: bold;
+  }
+
+  .feedback-buttons {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .like-button,
+  .dislike-button {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: none;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 0.3rem 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text-color);
+  }
+
+  .like-button svg,
+  .dislike-button svg {
+    stroke: var(--text-color);
+  }
+
+  .like-button:hover {
+    background-color: rgba(0, 200, 0, 0.1);
+    border-color: rgba(0, 200, 0, 0.5);
+    color: #4caf50;
+  }
+
+  .dislike-button:hover {
+    background-color: rgba(200, 0, 0, 0.1);
+    border-color: rgba(200, 0, 0, 0.5);
+    color: #f44336;
+  }
+
+  .thumbs-up,
+  .thumbs-down {
+    stroke-width: 2;
+  }
+
+  .like-button:hover .thumbs-up {
+    stroke: #4caf50;
+  }
+
+  .dislike-button:hover .thumbs-down {
+    stroke: #f44336;
+  }
+
   /* Mobile responsiveness */
   @media (max-width: 768px) {
     .container {
@@ -205,7 +305,7 @@
     }
 
     .table {
-      min-width: 600px; /* Ensure table has minimum width */
+      min-width: 800px; /* Ensure table has minimum width */
     }
   }
 </style>
