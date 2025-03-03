@@ -8,11 +8,11 @@
 
   // Function to get the rating color based on difficulty
   function getRatingColor(rating) {
-    if (rating >= 2900) return 'legendary-grandmaster';
+    if (rating >= 3000) return 'legendary-grandmaster';
     if (rating >= 2600) return 'international-grandmaster';
     if (rating >= 2400) return 'grandmaster';
     if (rating >= 2300) return 'international-master';
-    if (rating >= 2200) return 'master';
+    if (rating >= 2100) return 'master';
     if (rating >= 1900) return 'candidate-master';
     if (rating >= 1600) return 'expert';
     if (rating >= 1400) return 'specialist';
