@@ -1,5 +1,6 @@
 <script>
   import Header from '$lib/header/Header.svelte';
+  import Footer from '$lib/footer/Footer.svelte';
   import { webVitals } from '$lib/vitals';
   import { browser } from '$app/env';
   import { page } from '$app/stores';
@@ -16,13 +17,23 @@
   }
 </script>
 
-<Header />
+<div class="app">
+  <Header />
 
-<main>
-  <slot />
-</main>
+  <main>
+    <slot />
+  </main>
+
+  <Footer />
+</div>
 
 <style>
+  .app {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
   main {
     flex: 1;
     display: flex;
@@ -36,6 +47,7 @@
   :global(body) {
     overflow-x: hidden;
     max-width: 100vw;
+    margin: 0;
   }
 
   :global(.container) {

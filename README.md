@@ -13,7 +13,6 @@ Probhub is a modern web application that provides a curated collection of progra
 
 - **Frontend**: SvelteKit, TypeScript
 - **Styling**: CSS with custom variables for theming
-- **API Integration**: Codeforces API
 
 ## Getting Started
 
@@ -27,7 +26,7 @@ Probhub is a modern web application that provides a curated collection of progra
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/probhub.git
+   git clone https://github.com/cameroncuster/probhub.git
    cd probhub
    ```
 
@@ -85,6 +84,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Acknowledgments
 
-- [Codeforces](https://codeforces.com/) for their API
 - [SvelteKit](https://kit.svelte.dev/) for the framework
 - All the competitive programmers who inspire this project

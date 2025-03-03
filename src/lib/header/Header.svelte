@@ -4,137 +4,115 @@
 </script>
 
 <header>
-  <div class="corner">
-    <a href="/">
-      <img src={logo} alt="Probhub" />
-    </a>
-  </div>
+  <div class="container">
+    <div class="logo">
+      <a href="/" aria-label="Home">
+        <img src={logo} alt="Probhub" />
+        <span>Probhub</span>
+      </a>
+    </div>
 
-  <nav>
-    <svg viewBox="0 0 2 3" aria-hidden="true">
-      <path d="M0,0 L1,2 C1.5,3 1.5,3 2,3 L2,0 Z" />
-    </svg>
-    <ul>
-      <li class:active={$page.url.pathname === '/'}><a href="/">Problems</a></li>
-      <li class:active={$page.url.pathname === '/about'}>
-        <a href="/about">About</a>
-      </li>
-    </ul>
-    <svg viewBox="0 0 2 3" aria-hidden="true">
-      <path d="M0,0 L0,3 C0.5,3 0.5,3 1,2 L2,0 Z" />
-    </svg>
-  </nav>
-
-  <div class="corner">
-    <a href="https://github.com/cameroncuster/probhub" target="_blank" rel="noopener noreferrer">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <path
-          d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"
-        ></path>
-      </svg>
-    </a>
+    <nav>
+      <ul>
+        <li class:active={$page.url.pathname === '/'}>
+          <a href="/">Problems</a>
+        </li>
+        <li class:active={$page.url.pathname === '/about'}>
+          <a href="/about">About</a>
+        </li>
+      </ul>
+    </nav>
   </div>
 </header>
 
 <style>
   header {
+    background-color: var(--secondary-color);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 0.75rem 0;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
     display: flex;
     justify-content: space-between;
-    background-color: var(--secondary-color);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    align-items: center;
   }
 
-  .corner {
-    width: 3em;
-    height: 3em;
-  }
-
-  .corner a {
+  .logo {
     display: flex;
     align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    color: var(--heading-color);
   }
 
-  .corner img {
-    width: 2em;
-    height: 2em;
-    object-fit: contain;
+  .logo a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: var(--heading-color);
+    font-weight: 700;
+    font-size: 1.25rem;
+  }
+
+  .logo img {
+    width: 1.75rem;
+    height: 1.75rem;
+    margin-right: 0.5rem;
   }
 
   nav {
     display: flex;
-    justify-content: center;
-    --background: var(--tertiary-color);
-  }
-
-  svg {
-    width: 2em;
-    height: 3em;
-    display: block;
-  }
-
-  path {
-    fill: var(--background);
+    align-items: center;
   }
 
   ul {
-    position: relative;
-    padding: 0;
-    margin: 0;
-    height: 3em;
     display: flex;
-    justify-content: center;
-    align-items: center;
     list-style: none;
-    background: var(--background);
-    background-size: contain;
+    margin: 0;
+    padding: 0;
+    gap: 1.5rem;
   }
 
   li {
     position: relative;
-    height: 100%;
   }
 
-  li.active::before {
-    --size: 6px;
+  li.active::after {
     content: '';
-    width: 0;
-    height: 0;
     position: absolute;
-    top: 0;
-    left: calc(50% - var(--size));
-    border: var(--size) solid transparent;
-    border-top: var(--size) solid var(--accent-color);
+    bottom: -0.5rem;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--accent-color);
+    border-radius: 1px;
   }
 
   nav a {
-    display: flex;
-    height: 100%;
-    align-items: center;
-    padding: 0 1em;
     color: var(--heading-color);
-    font-weight: 700;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
+    font-weight: 600;
     text-decoration: none;
-    transition: color 0.2s linear;
+    transition: color 0.2s ease;
+    font-size: 1rem;
+    padding: 0.5rem 0;
+    display: block;
   }
 
   a:hover {
     color: var(--accent-color);
+  }
+
+  @media (max-width: 768px) {
+    .container {
+      padding: 0 1rem;
+    }
+
+    .logo span {
+      display: none;
+    }
   }
 </style>

@@ -88,8 +88,6 @@
 </svelte:head>
 
 <div class="container">
-  <h1>Programming Problems</h1>
-
   {#if loading}
     <div class="loading">Loading problems...</div>
   {:else if error}
@@ -103,7 +101,7 @@
             <th>Difficulty</th>
             <th>Tags</th>
             <th>Date Added</th>
-            <th>Added By</th>
+            <th>Credit</th>
             <th>Feedback</th>
           </tr>
         </thead>
