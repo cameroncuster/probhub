@@ -1,6 +1,6 @@
 <script>
   import { page } from '$app/stores';
-  import logo from '/favicon.png';
+  import logo from '$lib/assets/favicon.png';
 </script>
 
 <header>
