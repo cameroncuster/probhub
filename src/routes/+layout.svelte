@@ -1,5 +1,5 @@
 <script>
-	import Header from '$lib/header/Header.svelte';
+  import Header from '$lib/header/Header.svelte';
   import { webVitals } from '$lib/vitals';
   import { browser } from '$app/env';
   import { page } from '$app/stores';
@@ -12,47 +12,43 @@
       path: $page.url.pathname,
       params: $page.params,
       analyticsId
-    })
+    });
   }
 </script>
 
 <Header />
 
 <main>
-	<slot />
+  <slot />
 </main>
 
-<footer>
-	<p>visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to learn SvelteKit</p>
-</footer>
-
 <style>
-	main {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		padding: 1rem;
-		width: 100%;
-		max-width: 1024px;
-		margin: 0 auto;
-		box-sizing: border-box;
-	}
+  main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+  }
 
-	footer {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		padding: 40px;
-	}
+  :global(body) {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
 
-	footer a {
-		font-weight: bold;
-	}
+  :global(.container) {
+    width: 100%;
+    box-sizing: border-box;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
 
-	@media (min-width: 480px) {
-		footer {
-			padding: 40px 0;
-		}
-	}
+  @media (max-width: 768px) {
+    :global(.container) {
+      padding-left: 0.75rem;
+      padding-right: 0.75rem;
+    }
+  }
 </style>

@@ -5,13 +5,14 @@
     Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   --font-mono: 'Fira Mono', monospace;
   --pure-white: #ffffff;
-  --primary-color: #b9c6d2;
-  --secondary-color: #d0dde9;
-  --tertiary-color: #edf0f8;
-  --accent-color: #ff3e00;
-  --heading-color: rgba(0, 0, 0, 0.7);
-  --text-color: #444444;
-  --background-without-opacity: rgba(255, 255, 255, 0.7);
+  --pure-black: #000000;
+  --primary-color: #121212;
+  --secondary-color: #1e1e1e;
+  --tertiary-color: #2d2d2d;
+  --accent-color: #7c4dff;
+  --heading-color: rgba(255, 255, 255, 0.87);
+  --text-color: rgba(255, 255, 255, 0.6);
+  --background-without-opacity: rgba(30, 30, 30, 0.7);
   --column-width: 42rem;
   --column-margin-top: 4rem;
 }
@@ -20,12 +21,7 @@ body {
   min-height: 100vh;
   margin: 0;
   background-color: var(--primary-color);
-  background: linear-gradient(
-    180deg,
-    var(--primary-color) 0%,
-    var(--secondary-color) 10.45%,
-    var(--tertiary-color) 41.35%
-  );
+  color: var(--text-color);
 }
 
 body::before {
@@ -82,12 +78,12 @@ h2 {
 pre {
   font-size: 16px;
   font-family: var(--font-mono);
-  background-color: rgba(255, 255, 255, 0.45);
+  background-color: rgba(0, 0, 0, 0.3);
   border-radius: 3px;
-  box-shadow: 2px 2px 6px rgb(255 255 255 / 25%);
+  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.25);
   padding: 0.5em;
   overflow-x: auto;
-  color: var(--text-color);
+  color: var(--heading-color);
 }
 
 input,
@@ -98,6 +94,58 @@ button {
 
 button:focus:not(:focus-visible) {
   outline: none;
+}
+
+.card {
+  background-color: var(--secondary-color);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  text-align: left;
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--tertiary-color);
+  color: var(--heading-color);
+}
+
+.table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--tertiary-color);
+}
+
+.table tr:hover {
+  background-color: var(--tertiary-color);
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-easy {
+  background-color: #4caf50;
+  color: white;
+}
+
+.badge-medium {
+  background-color: #ff9800;
+  color: white;
+}
+
+.badge-hard {
+  background-color: #f44336;
+  color: white;
 }
 
 @media (min-width: 720px) {

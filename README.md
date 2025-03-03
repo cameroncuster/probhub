@@ -1,30 +1,90 @@
-# SvelteKit
+# Probhub - Programming Problems Hub
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte), deployed to [Vercel](https://vercel.com).
+Probhub is a modern web application that provides a curated collection of programming problems from various competitive programming platforms. It helps users improve their coding skills, prepare for technical interviews, and master algorithmic thinking.
 
-## Deploy Your Own
+## Features
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fvercel%2Ftree%2Fmain%2Fexamples%2Fsveltekit&project-name=sveltekit-vercel&repository-name=sveltekit-vercel&demo-title=SvelteKit%20%2B%20Vercel&demo-description=A%20SvelteKit%20app%20optimized%20Edge-first.&demo-url=https%3A%2F%2Fsveltekit-template.vercel.app%2F)
+- **Dark Theme**: Modern dark theme with clean UI
+- **Problem Listing**: Browse problems from Codeforces (with more platforms coming soon)
+- **Advanced Filtering**: Filter problems by difficulty, tags, or search by name
+- **Responsive Design**: Works on desktop and mobile devices
 
-_Live Example: https://sveltekit-template.vercel.app_
+## Tech Stack
 
-## Developing
+- **Frontend**: SvelteKit, TypeScript
+- **Styling**: CSS with custom variables for theming
+- **API Integration**: Codeforces API
 
-Once you've installed dependencies with `pnpm install`, start a development server:
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v14 or later)
+- pnpm (v6 or later)
+
+### Installation
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/your-username/probhub.git
+   cd probhub
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   pnpm install
+   ```
+
+3. Start the development server:
+
+   ```bash
+   pnpm dev
+   ```
+
+4. Open your browser and navigate to `http://localhost:5173`
+
+## Building for Production
+
+To create a production build:
 
 ```bash
-pnpm run dev
-
-# or start the server and open the app in a new browser tab
-pnpm run dev -- --open
+pnpm build
 ```
 
-## Building
-
-To create a production version of your app:
+You can preview the production build with:
 
 ```bash
-pnpm run build
+pnpm preview
 ```
 
-You can preview the production build with `npm run preview`.
+## Project Structure
+
+- `src/routes`: Page components and routes
+- `src/lib`: Shared components and utilities
+  - `src/lib/header`: Header component
+  - `src/lib/services`: API services (e.g., Codeforces API)
+- `static`: Static assets
+
+## Future Plans
+
+- Add support for more competitive programming platforms (LeetCode, HackerRank, AtCoder, etc.)
+- Implement user accounts to track solved problems
+- Add personalized problem recommendations
+- Create discussion forums for each problem
+- Add detailed statistics and analytics
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- [Codeforces](https://codeforces.com/) for their API
+- [SvelteKit](https://kit.svelte.dev/) for the framework
+- All the competitive programmers who inspire this project
