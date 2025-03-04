@@ -57,18 +57,11 @@
     <h3>Canon Problems</h3>
     <p>
       Inspired by "Canon Events" from <i>Across the Spiderverse</i>, Canon Problems are the problems
-      that fundamentally changed the way you think about approaching competitive programming
-      problems. These are the problems that:
+      that after solving, fundamentally changed the way you approach competitive programming problems.
     </p>
-    <ul>
-      <li>Introduce you to a new algorithm or data structure</li>
-      <li>Show you a clever application of a technique you already know</li>
-      <li>Challenge your problem-solving approach in a unique way</li>
-    </ul>
     <p>
       Probhub aims to collect these Canon Problems to enable you to maximize the effectiveness of
-      your practice. By leveraging the collective wisdom of the competitive programming community,
-      we can identify and share the most impactful problems worth your time.
+      your practice by leveraging the collective knowledge of the competitive programming community.
     </p>
   </section>
 
