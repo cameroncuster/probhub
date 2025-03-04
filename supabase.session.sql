@@ -4,7 +4,7 @@ CREATE TABLE problems (
   name TEXT NOT NULL,
   tags TEXT [] NOT NULL,
   difficulty INTEGER NOT NULL,
-  url TEXT NOT NULL,
+  url TEXT NOT NULL UNIQUE,
   solved INTEGER,
   date_added DATE NOT NULL DEFAULT CURRENT_DATE,
   added_by TEXT NOT NULL,

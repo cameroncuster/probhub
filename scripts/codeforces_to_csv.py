@@ -16,61 +16,59 @@ load_dotenv()
 # Constants
 CODEFORCES_API_BASE = "https://codeforces.com/api"
 CSV_OUTPUT_FILE = "codeforces_problems.csv"
-ADDED_BY_PROFILE = "https://codeforces.com/profile/ssk4988"
-ADDED_BY = "ssk4988"
+ADDED_BY_PROFILE = "https://codeforces.com/profile/Java"
+ADDED_BY = "Java"
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 # Problem URLs from input
 PROBLEM_URLS = [
-    "codeforces.com/contest/2002/problem/C",
-    "codeforces.com/contest/1794/problem/E",
-    "codeforces.com/contest/2056/problem/D",
-    "codeforces.com/contest/2061/problem/E",
-    "codeforces.com/contest/1988/problem/E",
-    "codeforces.com/contest/1763/problem/E",
-    "codeforces.com/contest/2004/problem/E",
-    "codeforces.com/contest/1285/problem/E",
-    "codeforces.com/contest/2033/problem/G",
-    "codeforces.com/contest/1674/problem/G",
-    "codeforces.com/contest/1750/problem/E",
-    "codeforces.com/contest/1657/problem/E",
-    "codeforces.com/contest/1766/problem/E",
-    "codeforces.com/contest/1971/problem/G",
-    "codeforces.com/contest/2026/problem/E",
-    "codeforces.com/contest/2022/problem/E1",
-    "codeforces.com/contest/981/problem/E",
-    "codeforces.com/contest/13/problem/E",
-    "codeforces.com/contest/1615/problem/E",
-    "codeforces.com/contest/1100/problem/F",
-    "codeforces.com/contest/1987/problem/F1",
-    "codeforces.com/contest/1922/problem/F",
-    "codeforces.com/contest/1919/problem/F2",
-    "codeforces.com/contest/1476/problem/E",
-    "codeforces.com/contest/1748/problem/E",
-    "codeforces.com/contest/1486/problem/E",
-    "codeforces.com/contest/1736/problem/D",
-    "codeforces.com/contest/1909/problem/E",
-    "codeforces.com/contest/1203/problem/F1",
-    "codeforces.com/contest/1936/problem/C",
-    "codeforces.com/contest/1856/problem/E1",
-    "codeforces.com/contest/1824/problem/B2",
-    "codeforces.com/contest/1810/problem/E",
-    "codeforces.com/contest/1804/problem/E",
+    "https://codeforces.com/contest/1859/problem/E",
+    "https://codeforces.com/problemset/problem/1681/F",
+    "https://codeforces.com/problemset/problem/10/D",
+    "https://codeforces.com/contest/626/problem/F",
+    "https://codeforces.com/contest/585/problem/E",
+    "https://codeforces.com/contest/1292/problem/D",
+    "https://codeforces.com/contest/613/problem/D",
 ]
 
 
 def extract_contest_and_index(url: str) -> Tuple[str, str]:
-    """Extract contest ID and problem index from a Codeforces problem URL."""
-    # Handle both URL formats
-    if "problemset/problem" in url:
-        match = re.search(r"problem(?:set)?/problem/(\d+)/([A-Z0-9]+)", url)
-    else:
-        match = re.search(r"contest/(\d+)/problem/([A-Z0-9]+)", url)
+    """Extract contest ID and problem index from a Codeforces problem URL.
 
-    if not match:
-        raise ValueError(f"Could not parse contest ID and index from URL: {url}")
+    Handles both formats:
+    - codeforces.com/contest/XXX/problem/Y
+    - codeforces.com/problemset/problem/XXX/Y
 
-    return match.group(1), match.group(2)
+    Args:
+        url: The Codeforces problem URL
+
+    Returns:
+        Tuple containing (contest_id, problem_index)
+
+    Raises:
+        ValueError: If the URL format is not recognized
+    """
+    # Normalize URL: remove protocol and www if present
+    normalized_url = (
+        url.replace("https://", "").replace("http://", "").replace("www.", "")
+    )
+
+    # Try problemset format first
+    problemset_match = re.search(
+        r"codeforces\.com/problemset/problem/(\d+)/([A-Z0-9]+)", normalized_url
+    )
+    if problemset_match:
+        return problemset_match.group(1), problemset_match.group(2)
+
+    # Try contest format
+    contest_match = re.search(
+        r"codeforces\.com/contest/(\d+)/problem/([A-Z0-9]+)", normalized_url
+    )
+    if contest_match:
+        return contest_match.group(1), contest_match.group(2)
+
+    # If we get here, neither pattern matched
+    raise ValueError(f"Could not parse contest ID and index from URL: {url}")
 
 
 def fetch_all_problems_data() -> Dict[str, Any]:
@@ -202,6 +200,7 @@ def insert_into_database(problems: List[Dict[str, Any]]) -> None:
                     INSERT INTO problems 
                     (name, tags, difficulty, url, solved, date_added, added_by, added_by_url, likes, dislikes)
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    ON CONFLICT (url) DO NOTHING
                     """
 
                     # Execute the query
@@ -262,7 +261,7 @@ def main():
 
     if problems:
         # Write to CSV
-        write_to_csv(problems, CSV_OUTPUT_FILE)
+        # write_to_csv(problems, CSV_OUTPUT_FILE)
         print(
             f"Successfully processed {len(problems)} out of {len(PROBLEM_URLS)} problems"
         )
