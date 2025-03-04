@@ -13,6 +13,7 @@ Probhub is a modern web application that provides a curated collection of progra
 
 - **Frontend**: SvelteKit, TypeScript
 - **Styling**: CSS with custom variables for theming
+- **Database**: Supabase (PostgreSQL)
 
 ## Getting Started
 
@@ -20,6 +21,7 @@ Probhub is a modern web application that provides a curated collection of progra
 
 - Node.js (v14 or later)
 - pnpm (v6 or later)
+- Supabase account and project
 
 ### Installation
 
@@ -36,13 +38,37 @@ Probhub is a modern web application that provides a curated collection of progra
    pnpm install
    ```
 
-3. Start the development server:
+3. Set up environment variables:
+
+   Create a `.env` file in the root directory with the following variables:
+
+   ```
+   VITE_SUPABASE_URL=your_supabase_url
+   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
+
+4. Run the database migration script to populate the database with initial problems:
+
+   ```bash
+   pnpm tsx scripts/migrate-problems.ts
+   ```
+
+5. Start the development server:
 
    ```bash
    pnpm dev
    ```
 
-4. Open your browser and navigate to `http://localhost:5173`
+6. Open your browser and navigate to `http://localhost:5173`
+
+### Database Setup
+
+The application uses Supabase as its database. The schema is defined in `supabase.session.sql`. You need to:
+
+1. Create a Supabase project
+2. Run the SQL commands in `supabase.session.sql` to create the necessary tables
+3. Set up the environment variables as described above
+4. Run the migration script to populate the database with initial problems
 
 ## Building for Production
 
@@ -63,8 +89,9 @@ pnpm preview
 - `src/routes`: Page components and routes
 - `src/lib`: Shared components and utilities
   - `src/lib/header`: Header component
-  - `src/lib/services`: API services (e.g., Codeforces API)
+  - `src/lib/services`: API services (e.g., Codeforces API, database)
 - `static`: Static assets
+- `scripts`: Utility scripts (e.g., database migration)
 
 ## Future Plans
 
@@ -85,4 +112,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Acknowledgments
 
 - [SvelteKit](https://kit.svelte.dev/) for the framework
+- [Supabase](https://supabase.com/) for the database
 - All the competitive programmers who inspire this project
