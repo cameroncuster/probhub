@@ -16,19 +16,16 @@ load_dotenv()
 # Constants
 CODEFORCES_API_BASE = "https://codeforces.com/api"
 CSV_OUTPUT_FILE = "codeforces_problems.csv"
-ADDED_BY_PROFILE = "https://codeforces.com/profile/Java"
-ADDED_BY = "Java"
+ADDED_BY_PROFILE = "https://codeforces.com/profile/lrvideckis"
+ADDED_BY = "lrvideckis"
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 # Problem URLs from input
 PROBLEM_URLS = [
-    "https://codeforces.com/contest/1859/problem/E",
-    "https://codeforces.com/problemset/problem/1681/F",
-    "https://codeforces.com/problemset/problem/10/D",
-    "https://codeforces.com/contest/626/problem/F",
-    "https://codeforces.com/contest/585/problem/E",
-    "https://codeforces.com/contest/1292/problem/D",
-    "https://codeforces.com/contest/613/problem/D",
+    "https://codeforces.com/problemset/problem/342/E",
+    "https://codeforces.com/problemset/problem/1381/D",
+    "https://codeforces.com/problemset/problem/407/D",
+    "https://codeforces.com/contest/911/problem/G",
 ]
 
 
