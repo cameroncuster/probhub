@@ -1,118 +1,42 @@
-<script>
+<script lang="ts">
   import { page } from '$app/stores';
   import logo from '$lib/assets/favicon.png';
 </script>
 
-<header>
-  <div class="container">
-    <div class="logo">
-      <a href="/" aria-label="Home">
-        <img src={logo} alt="Probhub" />
-        <span>Probhub</span>
+<header class="bg-gray-50 shadow-sm sticky top-0 z-50 py-3">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 flex justify-between items-center">
+    <div class="flex items-center">
+      <a href="/" class="flex items-center text-gray-800 font-bold text-xl" aria-label="Home">
+        <img src={logo} alt="Probhub" class="w-7 h-7 mr-2" />
+        <span class="hidden sm:inline">Probhub</span>
       </a>
     </div>
 
-    <nav>
-      <ul>
-        <li class:active={$page.url.pathname === '/'}>
-          <a href="/">Problems</a>
+    <nav class="flex items-center">
+      <ul class="flex space-x-6">
+        <li class="relative">
+          <a
+            href="/"
+            class={`text-gray-800 font-semibold hover:text-blue-600 transition-colors py-2 block ${$page.url.pathname === '/' ? 'text-blue-600' : ''}`}
+          >
+            Problems
+          </a>
+          {#if $page.url.pathname === '/'}
+            <div class="absolute bottom-[-0.5rem] left-0 w-full h-0.5 bg-blue-600 rounded"></div>
+          {/if}
         </li>
-        <li class:active={$page.url.pathname === '/about'}>
-          <a href="/about">About</a>
+        <li class="relative">
+          <a
+            href="/about"
+            class={`text-gray-800 font-semibold hover:text-blue-600 transition-colors py-2 block ${$page.url.pathname === '/about' ? 'text-blue-600' : ''}`}
+          >
+            About
+          </a>
+          {#if $page.url.pathname === '/about'}
+            <div class="absolute bottom-[-0.5rem] left-0 w-full h-0.5 bg-blue-600 rounded"></div>
+          {/if}
         </li>
       </ul>
     </nav>
   </div>
 </header>
-
-<style>
-  header {
-    background-color: var(--secondary-color);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    padding: 0.75rem 0;
-  }
-
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 1.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .logo {
-    display: flex;
-    align-items: center;
-  }
-
-  .logo a {
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    color: var(--heading-color);
-    font-weight: 700;
-    font-size: 1.25rem;
-  }
-
-  .logo img {
-    width: 1.75rem;
-    height: 1.75rem;
-    margin-right: 0.5rem;
-  }
-
-  nav {
-    display: flex;
-    align-items: center;
-  }
-
-  ul {
-    display: flex;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    gap: 1.5rem;
-  }
-
-  li {
-    position: relative;
-  }
-
-  li.active::after {
-    content: '';
-    position: absolute;
-    bottom: -0.5rem;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background-color: var(--accent-color);
-    border-radius: 1px;
-  }
-
-  nav a {
-    color: var(--heading-color);
-    font-weight: 600;
-    text-decoration: none;
-    transition: color 0.2s ease;
-    font-size: 1rem;
-    padding: 0.5rem 0;
-    display: block;
-  }
-
-  a:hover {
-    color: var(--accent-color);
-  }
-
-  @media (max-width: 768px) {
-    .container {
-      padding: 0 1rem;
-    }
-
-    .logo span {
-      display: none;
-    }
-  }
-</style>

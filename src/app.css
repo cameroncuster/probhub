@@ -1,168 +1,73 @@
-@import '@fontsource/fira-mono';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-  font-family: Arial, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
-    Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  --font-mono: 'Fira Mono', monospace;
-  --pure-white: #ffffff;
-  --pure-black: #000000;
-  --primary-color: #121212;
-  --secondary-color: #1e1e1e;
-  --tertiary-color: #2d2d2d;
-  --accent-color: #7c4dff;
-  --heading-color: rgba(255, 255, 255, 0.87);
-  --text-color: rgba(255, 255, 255, 0.6);
-  --background-without-opacity: rgba(30, 30, 30, 0.7);
-  --column-width: 42rem;
-  --column-margin-top: 4rem;
-  --border-color: #444444;
-
-  /* Codeforces rating colors */
-  --legendary-grandmaster-color: #ff0000;
-  --international-grandmaster-color: #ff0000;
-  --grandmaster-color: #ff0000;
-  --international-master-color: #ff8c00;
-  --master-color: #ff8c00;
-  --candidate-master-color: #aa00aa;
-  --expert-color: #0000ff;
-  --specialist-color: #03a89e;
-  --pupil-color: #008000;
-  --newbie-color: #808080;
+  --primary-color: #ffffff;
+  --secondary-color: #f8f9fa;
+  --tertiary-color: #e9ecef;
+  --text-color: #212529;
+  --heading-color: #343a40;
+  --accent-color: #0d6efd;
+  
+  /* Rating colors */
+  --newbie-color: #cccccc;
+  --pupil-color: #77ff77;
+  --specialist-color: #77ddbb;
+  --expert-color: #aaaaff;
+  --candidate-master-color: #ff88ff;
+  --master-color: #ffcc88;
+  --international-master-color: #ffbb55;
+  --grandmaster-color: #ff7777;
+  --international-grandmaster-color: #ff3333;
+  --legendary-grandmaster-color: #aa0000;
 }
 
-body {
-  min-height: 100vh;
-  margin: 0;
-  background-color: var(--primary-color);
-  color: var(--text-color);
-}
-
-body::before {
-  content: '';
-  width: 80vw;
-  height: 100vh;
-  position: absolute;
-  top: 0;
-  left: 10vw;
-  z-index: -1;
-  background: radial-gradient(
-    50% 50% at 50% 50%,
-    var(--pure-white) 0%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  opacity: 0.05;
-}
-
-#svelte {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-h1,
-h2,
-p {
-  font-weight: 400;
-  color: var(--heading-color);
-}
-
-p {
-  line-height: 1.5;
-}
-
-a {
-  color: var(--accent-color);
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-h1 {
-  font-size: 2rem;
-  text-align: center;
-}
-
-h2 {
-  font-size: 1rem;
-}
-
-pre {
-  font-size: 16px;
-  font-family: var(--font-mono);
-  background-color: rgba(0, 0, 0, 0.3);
-  border-radius: 3px;
-  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.25);
-  padding: 0.5em;
-  overflow-x: auto;
-  color: var(--heading-color);
-}
-
-input,
-button {
-  font-size: inherit;
-  font-family: inherit;
-}
-
-button:focus:not(:focus-visible) {
-  outline: none;
-}
-
-.card {
-  background-color: var(--secondary-color);
-  border-radius: 8px;
-  padding: 1.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  margin-bottom: 1rem;
-}
-
-.table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.table th {
-  text-align: left;
-  padding: 0.75rem;
-  border-bottom: 1px solid var(--tertiary-color);
-  color: var(--heading-color);
-}
-
-.table td {
-  padding: 0.75rem;
-  border-bottom: 1px solid var(--tertiary-color);
-}
-
-.table tr:hover {
-  background-color: var(--tertiary-color);
-}
-
-.badge {
+/* Custom components */
+.rating-badge {
   display: inline-block;
   padding: 0.25rem 0.5rem;
-  border-radius: 4px;
+  border-radius: 0.25rem;
+  color: white;
+  font-weight: bold;
   font-size: 0.75rem;
-  font-weight: 600;
 }
 
-.badge-easy {
-  background-color: #4caf50;
-  color: white;
+.problem-tag {
+  font-size: 0.75rem;
+  padding: 0.125rem 0.375rem;
+  background-color: #e9ecef;
+  border-radius: 0.25rem;
 }
 
-.badge-medium {
-  background-color: #ff9800;
-  color: white;
+/* Background colors for rating badges */
+.bg-newbie {
+  background-color: var(--newbie-color);
 }
-
-.badge-hard {
-  background-color: #f44336;
-  color: white;
+.bg-pupil {
+  background-color: var(--pupil-color);
 }
-
-@media (min-width: 720px) {
-  h1 {
-    font-size: 2.4rem;
-  }
+.bg-specialist {
+  background-color: var(--specialist-color);
+}
+.bg-expert {
+  background-color: var(--expert-color);
+}
+.bg-candidate-master {
+  background-color: var(--candidate-master-color);
+}
+.bg-master {
+  background-color: var(--master-color);
+}
+.bg-international-master {
+  background-color: var(--international-master-color);
+}
+.bg-grandmaster {
+  background-color: var(--grandmaster-color);
+}
+.bg-international-grandmaster {
+  background-color: var(--international-grandmaster-color);
+}
+.bg-legendary-grandmaster {
+  background-color: var(--legendary-grandmaster-color);
 }

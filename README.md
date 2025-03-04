@@ -1,116 +1,58 @@
-# Probhub - Programming Problems Hub
+# create-svelte
 
-Probhub is a modern web application that provides a curated collection of programming problems from various competitive programming platforms. It helps users improve their coding skills, prepare for technical interviews, and master algorithmic thinking.
+Everything you need to build a Svelte library, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
 
-## Features
+Read more about creating a library [in the docs](https://svelte.dev/docs/kit/packaging).
 
-- **Dark Theme**: Modern dark theme with clean UI
-- **Problem Listing**: Browse problems from Codeforces (with more platforms coming soon)
-- **Advanced Filtering**: Filter problems by difficulty, tags, or search by name
-- **Responsive Design**: Works on desktop and mobile devices
+## Creating a project
 
-## Tech Stack
-
-- **Frontend**: SvelteKit, TypeScript
-- **Styling**: CSS with custom variables for theming
-- **Database**: Supabase (PostgreSQL)
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js (v14 or later)
-- pnpm (v6 or later)
-- Supabase account and project
-
-### Installation
-
-1. Clone the repository:
-
-   ```bash
-   git clone https://github.com/cameroncuster/probhub.git
-   cd probhub
-   ```
-
-2. Install dependencies:
-
-   ```bash
-   pnpm install
-   ```
-
-3. Set up environment variables:
-
-   Create a `.env` file in the root directory with the following variables:
-
-   ```
-   VITE_SUPABASE_URL=your_supabase_url
-   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-   ```
-
-4. Run the database migration script to populate the database with initial problems:
-
-   ```bash
-   pnpm tsx scripts/migrate-problems.ts
-   ```
-
-5. Start the development server:
-
-   ```bash
-   pnpm dev
-   ```
-
-6. Open your browser and navigate to `http://localhost:5173`
-
-### Database Setup
-
-The application uses Supabase as its database. The schema is defined in `supabase.session.sql`. You need to:
-
-1. Create a Supabase project
-2. Run the SQL commands in `supabase.session.sql` to create the necessary tables
-3. Set up the environment variables as described above
-4. Run the migration script to populate the database with initial problems
-
-## Building for Production
-
-To create a production build:
+If you're seeing this, you've probably already done this step. Congrats!
 
 ```bash
-pnpm build
+# create a new project in the current directory
+npx sv create
+
+# create a new project in my-app
+npx sv create my-app
 ```
 
-You can preview the production build with:
+## Developing
+
+Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
 
 ```bash
-pnpm preview
+npm run dev
+
+# or start the server and open the app in a new browser tab
+npm run dev -- --open
 ```
 
-## Project Structure
+Everything inside `src/lib` is part of your library, everything inside `src/routes` can be used as a showcase or preview app.
 
-- `src/routes`: Page components and routes
-- `src/lib`: Shared components and utilities
-  - `src/lib/header`: Header component
-  - `src/lib/services`: API services (e.g., Codeforces API, database)
-- `static`: Static assets
-- `scripts`: Utility scripts (e.g., database migration)
+## Building
 
-## Future Plans
+To build your library:
 
-- Add support for more competitive programming platforms (LeetCode, HackerRank, AtCoder, etc.)
-- Implement user accounts to track solved problems
-- Add personalized problem recommendations
-- Create discussion forums for each problem
-- Add detailed statistics and analytics
+```bash
+npm run package
+```
 
-## Contributing
+To create a production version of your showcase app:
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+```bash
+npm run build
+```
 
-## License
+You can preview the production build with `npm run preview`.
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
 
-## Acknowledgments
+## Publishing
 
-- [SvelteKit](https://kit.svelte.dev/) for the framework
-- [Supabase](https://supabase.com/) for the database
-- All the competitive programmers who inspire this project
+Go into the `package.json` and give your package the desired name through the `"name"` option. Also consider adding a `"license"` field and point it to a `LICENSE` file which you can create from a template (one popular option is the [MIT license](https://opensource.org/license/mit/)).
+
+To publish your library to [npm](https://www.npmjs.com):
+
+```bash
+npm publish
+```

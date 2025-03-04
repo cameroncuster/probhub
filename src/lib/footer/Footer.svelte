@@ -1,19 +1,20 @@
-<script>
+<script lang="ts">
   // Footer component
 </script>
 
-<footer>
-  <div class="container">
-    <div class="footer-content">
-      <div class="copyright">
+<footer class="bg-gray-50 py-6 mt-auto border-t border-gray-200">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <div class="flex justify-between items-center flex-col sm:flex-row gap-4 sm:gap-0">
+      <div class="text-gray-600 text-sm">
         © {new Date().getFullYear()} ProbHub
       </div>
-      <div class="links">
+      <div class="flex gap-6">
         <a
           href="https://github.com/cameroncuster/probhub"
           target="_blank"
           rel="noopener noreferrer"
           aria-label="GitHub Repository"
+          class="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors text-sm"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -36,59 +37,3 @@
     </div>
   </div>
 </footer>
-
-<style>
-  footer {
-    background-color: var(--secondary-color);
-    padding: 1.5rem 0;
-    margin-top: auto;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
-  }
-
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 1.5rem;
-  }
-
-  .footer-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .copyright {
-    color: var(--text-color);
-    font-size: 0.9rem;
-  }
-
-  .links {
-    display: flex;
-    gap: 1.5rem;
-  }
-
-  .links a {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--text-color);
-    text-decoration: none;
-    font-size: 0.9rem;
-    transition: color 0.2s ease;
-  }
-
-  .links a:hover {
-    color: var(--accent-color);
-  }
-
-  @media (max-width: 768px) {
-    .container {
-      padding: 0 1rem;
-    }
-
-    .footer-content {
-      flex-direction: column;
-      gap: 1rem;
-    }
-  }
-</style>

@@ -1,121 +1,102 @@
-<script>
-  // About page for Probhub
+<script lang="ts">
+	// About page component
 </script>
 
 <svelte:head>
-  <title>Probhub | About</title>
-  <meta name="description" content="About this app" />
+	<title>About - Probhub</title>
 </svelte:head>
 
-<div class="container">
-  <section>
-    <h2>Probhub</h2>
-    <p>
-      Probhub is a collection of hand-picked problems. If you are new to competitive programming you
-      can learn the fundamentals at some of these sites:
-    </p>
-    <ul>
-      <li>
-        <a href="https://cses.fi/" target="_blank" rel="noopener noreferrer">CSES Problem Set</a>
-      </li>
-      <li>
-        <a href="https://cp-algorithms.com/" target="_blank" rel="noopener noreferrer"
-          >CP Algorithms</a
-        >
-      </li>
-      <li>
-        <a href="https://usaco.guide/" target="_blank" rel="noopener noreferrer">USACO Guide</a>
-      </li>
-      <li>
-        <a href="https://atcoder.jp/contests/dp" target="_blank" rel="noopener noreferrer"
-          >AtCoder DP Contest</a
-        >
-      </li>
-      <li>
-        <a href="https://codeforces.com/edu/courses" target="_blank" rel="noopener noreferrer"
-          >Codeforces EDU</a
-        >
-      </li>
-    </ul>
+<div class="mx-auto max-w-4xl px-4 py-12 sm:px-6">
+	<div class="prose prose-blue max-w-none">
+		<h1 class="mb-6 text-3xl font-bold text-gray-900">About Probhub</h1>
 
-    <h3>Beyond the Fundamentals</h3>
-    <p>
-      But what about once you've learned the fundamentals? How should you practice then? Experts
-      like Umnik recommend working through an archive of problems (as described in this
-      <a href="https://codeforces.com/blog/entry/98806" target="_blank" rel="noopener noreferrer">
-        Codeforces blog post</a
-      >).
-    </p>
+		<p class="mb-8 text-lg text-gray-700">
+			Probhub is a curated collection of programming problems from various online judges and
+			competitive programming platforms. Our goal is to help programmers find high-quality problems
+			to practice their skills.
+		</p>
 
-    <p>
-      It's a great approach, but the quality of problems on any given archive can vary greatly. If
-      only there were a way to extract the highest quality problems available on the internet. We
-      think we can do this! Probhub is a social site that allows users to curate and maintain their
-      own lists of recommendations.
-    </p>
+		<h2 class="mt-8 mb-4 text-2xl font-semibold text-gray-900">How It Works</h2>
 
-    <h3>Canon Problems</h3>
-    <p>
-      Inspired by "Canon Events" from <i>Across the Spiderverse</i>, Canon Problems are the problems
-      that after solving, fundamentally changed the way you approach competitive programming problems.
-    </p>
-    <p>
-      Probhub aims to collect these Canon Problems to enable you to maximize the effectiveness of
-      your practice by leveraging the collective knowledge of the competitive programming community.
-    </p>
-  </section>
+		<p class="mb-4 text-gray-700">
+			Problems are added by community members who find them interesting, educational, or
+			challenging. Each problem includes:
+		</p>
 
-  <section>
-    <h2>Contribute</h2>
-    <p>
-      Probhub is an open-source project, and we welcome contributions from the community. If you'd
-      like to help improve Probhub, please check out our <a
-        href="https://github.com/cameroncuster/probhub"
-        target="_blank"
-        rel="noopener noreferrer">GitHub repository</a
-      >.
-    </p>
-  </section>
+		<ul class="mb-6 list-disc pl-6 text-gray-700">
+			<li class="mb-2">A difficulty rating to help you find problems at your skill level</li>
+			<li class="mb-2">Tags indicating the algorithms or data structures involved</li>
+			<li class="mb-2">A link to the original problem on its platform</li>
+			<li class="mb-2">Information about who added the problem</li>
+		</ul>
+
+		<p class="mb-4 text-gray-700">
+			Users can provide feedback on problems by liking or disliking them, helping others find the
+			most valuable practice resources.
+		</p>
+
+		<h2 class="mt-8 mb-4 text-2xl font-semibold text-gray-900">Contributing</h2>
+
+		<p class="mb-4 text-gray-700">
+			We welcome contributions from the community! If you'd like to add a problem to Probhub, please
+			visit our
+			<a
+				href="https://github.com/cameroncuster/probhub"
+				class="text-blue-600 hover:text-blue-800 hover:underline">GitHub repository</a
+			>
+			for more information on how to contribute.
+		</p>
+
+		<h2 class="mt-8 mb-4 text-2xl font-semibold text-gray-900">Contact</h2>
+
+		<p class="text-gray-700">
+			If you have any questions, suggestions, or feedback, please reach out through our
+			<a
+				href="https://github.com/cameroncuster/probhub/issues"
+				class="text-blue-600 hover:text-blue-800 hover:underline">GitHub issues</a
+			>.
+		</p>
+	</div>
 </div>
 
 <style>
-  .container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 2rem 1rem;
-  }
+	.container {
+		max-width: 800px;
+		margin: 0 auto;
+		padding: 2rem 1rem;
+	}
 
-  h1 {
-    margin-bottom: 2rem;
-  }
+	h1 {
+		margin-bottom: 2rem;
+	}
 
-  section {
-    margin-bottom: 2.5rem;
-  }
+	section {
+		margin-bottom: 2.5rem;
+	}
 
-  h2 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-    color: var(--accent-color);
-  }
+	h2 {
+		font-size: 1.5rem;
+		margin-bottom: 1rem;
+		color: var(--accent-color);
+	}
 
-  p {
-    margin-bottom: 1rem;
-    line-height: 1.6;
-  }
+	p {
+		margin-bottom: 1rem;
+		line-height: 1.6;
+	}
 
-  ul,
-  ol {
-    margin-left: 1.5rem;
-    margin-bottom: 1rem;
-  }
+	ul,
+	ol {
+		margin-left: 1.5rem;
+		margin-bottom: 1rem;
+	}
 
-  li {
-    margin-bottom: 0.5rem;
-    line-height: 1.6;
-  }
+	li {
+		margin-bottom: 0.5rem;
+		line-height: 1.6;
+	}
 
-  strong {
-    color: var(--heading-color);
-  }
+	strong {
+		color: var(--heading-color);
+	}
 </style>
