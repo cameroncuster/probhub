@@ -84,6 +84,16 @@ You can preview the production build with:
 pnpm preview
 ```
 
+## Continuous Integration
+
+This project uses GitHub Actions for continuous integration. The workflow automatically runs on push to main/master branches and on pull requests:
+
+- Linting with Prettier to ensure code formatting standards
+- Type checking with Svelte Check
+- Building the project to catch any build errors
+
+You can view the workflow configuration in `.github/workflows/ci.yml`.
+
 ## Project Structure
 
 - `src/routes`: Page components and routes
