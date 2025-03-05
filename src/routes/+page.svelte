@@ -201,12 +201,6 @@
     overflow-x: auto; /* Allow horizontal scrolling for the table */
   }
 
-  h1 {
-    margin-bottom: 2rem;
-    font-size: 2rem;
-    word-break: break-word;
-  }
-
   .loading,
   .error {
     text-align: center;
