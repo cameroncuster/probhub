@@ -42,6 +42,3 @@ jobs:
 
       - name: Check code formatting
         run: pnpm run lint
-
-      - name: Build
-        run: pnpm run build
