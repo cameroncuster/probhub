@@ -1,13 +1,11 @@
 <script>
   import { page } from '$app/stores';
-  import logo from '$lib/assets/favicon.png';
 </script>
 
 <header>
   <div class="container">
     <div class="logo">
       <a href="/" aria-label="Home">
-        <img src={logo} alt="Probhub" />
         <span>Probhub</span>
       </a>
     </div>
@@ -56,12 +54,6 @@
     color: var(--heading-color);
     font-weight: 700;
     font-size: 1.25rem;
-  }
-
-  .logo img {
-    width: 1.75rem;
-    height: 1.75rem;
-    margin-right: 0.5rem;
   }
 
   nav {
