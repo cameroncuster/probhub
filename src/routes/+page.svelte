@@ -1,11 +1,12 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { fetchProblems } from '$lib/services/codeforces';
+  import { fetchProblems, updateProblemFeedback } from '$lib/services/codeforces';
   import type { Problem } from '$lib/services/codeforces';
 
   let problems: Problem[] = [];
   let loading: boolean = false;
   let error: string | null = null;
+  let userFeedback: Record<string, 'like' | 'dislike' | null> = {};
 
   // Function to get the rating color based on difficulty
   function getRatingColor(rating: number): string {
@@ -45,18 +46,88 @@
     });
   }
 
+  // Function to calculate problem score (likes - dislikes)
+  function calculateScore(problem: Problem): number {
+    return problem.likes - problem.dislikes;
+  }
+
+  // Function to sort problems by score (likes - dislikes)
+  function sortProblemsByScore(problemsToSort: Problem[]): Problem[] {
+    return [...problemsToSort].sort((a, b) => calculateScore(b) - calculateScore(a));
+  }
+
   // Function to handle like/dislike actions
-  function handleLike(problemId: string, isLike: boolean): void {
-    problems = problems.map((problem) => {
-      if (problem.id === problemId) {
-        if (isLike) {
-          return { ...problem, likes: problem.likes + 1 };
-        } else {
-          return { ...problem, dislikes: problem.dislikes + 1 };
-        }
+  async function handleLike(problemId: string, isLike: boolean): Promise<void> {
+    try {
+      // Check if user has already provided feedback for this problem
+      const currentFeedback = userFeedback[problemId];
+
+      // If user already gave the same feedback, treat as an "undo"
+      if ((isLike && currentFeedback === 'like') || (!isLike && currentFeedback === 'dislike')) {
+        // Update UI optimistically
+        problems = problems.map((problem) => {
+          if (problem.id === problemId) {
+            if (isLike) {
+              return { ...problem, likes: problem.likes - 1 };
+            } else {
+              return { ...problem, dislikes: problem.dislikes - 1 };
+            }
+          }
+          return problem;
+        });
+
+        // Remove the user's feedback
+        userFeedback[problemId] = null;
+
+        // Sort problems after updating
+        problems = sortProblemsByScore(problems);
+
+        // Update the database
+        await updateProblemFeedback(problemId, isLike, true);
+        return;
       }
-      return problem;
-    });
+
+      // Handle new feedback or changing from like to dislike (or vice versa)
+      // Update UI optimistically
+      problems = problems.map((problem) => {
+        if (problem.id === problemId) {
+          let updatedProblem = { ...problem };
+
+          // If switching from like to dislike or vice versa, undo the previous action
+          if (currentFeedback === 'like' && !isLike) {
+            updatedProblem.likes -= 1;
+            updatedProblem.dislikes += 1;
+          } else if (currentFeedback === 'dislike' && isLike) {
+            updatedProblem.dislikes -= 1;
+            updatedProblem.likes += 1;
+          } else {
+            // New feedback
+            if (isLike) {
+              updatedProblem.likes += 1;
+            } else {
+              updatedProblem.dislikes += 1;
+            }
+          }
+
+          return updatedProblem;
+        }
+        return problem;
+      });
+
+      // Store the user's feedback
+      userFeedback[problemId] = isLike ? 'like' : 'dislike';
+
+      // Sort problems after updating
+      problems = sortProblemsByScore(problems);
+
+      // Update the database
+      await updateProblemFeedback(problemId, isLike, false, currentFeedback);
+    } catch (err) {
+      console.error('Error handling like/dislike:', err);
+      error = 'Failed to update problem feedback.';
+      // Reload problems to get correct state
+      await loadProblems();
+    }
   }
 
   // Function to load problems
@@ -68,7 +139,8 @@
       const fetchedProblems = await fetchProblems();
 
       if (fetchedProblems && fetchedProblems.length > 0) {
-        problems = fetchedProblems;
+        // Sort problems by score (likes - dislikes)
+        problems = sortProblemsByScore(fetchedProblems);
       }
 
       loading = false;
@@ -79,9 +151,28 @@
     }
   }
 
+  // Load user feedback from localStorage on mount
   onMount(() => {
     loadProblems();
+
+    // Try to load previous feedback from localStorage
+    const savedFeedback = localStorage.getItem('userFeedback');
+    if (savedFeedback) {
+      try {
+        userFeedback = JSON.parse(savedFeedback);
+      } catch (e) {
+        console.error('Failed to parse saved feedback', e);
+        userFeedback = {};
+      }
+    }
   });
+
+  // Save user feedback to localStorage when it changes
+  $: {
+    if (Object.keys(userFeedback).length > 0) {
+      localStorage.setItem('userFeedback', JSON.stringify(userFeedback));
+    }
+  }
 </script>
 
 <svelte:head>
@@ -140,8 +231,9 @@
                 <div class="feedback-buttons">
                   <button
                     class="like-button"
+                    class:active={userFeedback[problem.id] === 'like'}
                     on:click={() => handleLike(problem.id, true)}
-                    title="Like this problem"
+                    title={userFeedback[problem.id] === 'like' ? 'Undo like' : 'Like this problem'}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -163,8 +255,11 @@
                   </button>
                   <button
                     class="dislike-button"
+                    class:active={userFeedback[problem.id] === 'dislike'}
                     on:click={() => handleLike(problem.id, false)}
-                    title="Dislike this problem"
+                    title={userFeedback[problem.id] === 'dislike'
+                      ? 'Undo dislike'
+                      : 'Dislike this problem'}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -279,6 +374,26 @@
   }
 
   .dislike-button:hover .thumbs-down {
+    stroke: #f44336;
+  }
+
+  .like-button.active {
+    background-color: rgba(0, 200, 0, 0.1);
+    border-color: rgba(0, 200, 0, 0.5);
+    color: #4caf50;
+  }
+
+  .dislike-button.active {
+    background-color: rgba(200, 0, 0, 0.1);
+    border-color: rgba(200, 0, 0, 0.5);
+    color: #f44336;
+  }
+
+  .like-button.active .thumbs-up {
+    stroke: #4caf50;
+  }
+
+  .dislike-button.active .thumbs-down {
     stroke: #f44336;
   }
 
