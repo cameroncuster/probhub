@@ -1,5 +1,23 @@
-<script>
+<script lang="ts">
   import { page } from '$app/stores';
+  import { user } from '$lib/services/auth';
+  import { signInWithGithub, signOut } from '$lib/services/auth';
+
+  async function handleLogin() {
+    try {
+      await signInWithGithub();
+    } catch (error) {
+      console.error('Login error:', error);
+    }
+  }
+
+  async function handleLogout() {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  }
 </script>
 
 <header>
@@ -18,7 +36,24 @@
         <li class:active={$page.url.pathname === '/about'}>
           <a href="/about">About</a>
         </li>
+        {#if $user}
+          <li class:active={$page.url.pathname === '/submit'}>
+            <a href="/submit">Submit Problem</a>
+          </li>
+        {/if}
       </ul>
+      <div class="auth-buttons">
+        {#if $user}
+          <div class="user-info">
+            <span class="user-name">{$user.email?.split('@')[0] || 'User'}</span>
+            <button class="logout-button" on:click={handleLogout}>Logout</button>
+          </div>
+        {:else}
+          <button class="login-button" on:click={handleLogin} title="Login with Google">
+            <span class="login-text">Sign in</span>
+          </button>
+        {/if}
+      </div>
     </nav>
   </div>
 </header>
@@ -59,6 +94,7 @@
   nav {
     display: flex;
     align-items: center;
+    gap: 1.5rem;
   }
 
   ul {
@@ -98,13 +134,87 @@
     color: var(--accent-color);
   }
 
+  .auth-buttons {
+    display: flex;
+    align-items: center;
+  }
+
+  .login-button,
+  .logout-button {
+    border: none;
+    border-radius: 4px;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .login-button {
+    background-color: #4285f4;
+    color: white;
+    border: 1px solid #4285f4;
+    border-radius: 4px;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  .login-button:hover {
+    background-color: #3367d6;
+    border-color: #3367d6;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+
+  .logout-button {
+    background-color: transparent;
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+  }
+
+  .logout-button:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: var(--text-color);
+  }
+
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .user-name {
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+
   @media (max-width: 768px) {
     .container {
       padding: 0 1rem;
     }
 
+    nav {
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.75rem;
+    }
+
     .logo span {
       display: none;
+    }
+
+    .user-name {
+      display: none;
+    }
+
+    .login-button {
+      padding: 0.4rem 0.75rem;
     }
   }
 </style>

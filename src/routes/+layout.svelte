@@ -1,7 +1,23 @@
-<script>
+<script lang="ts">
   import Header from '$lib/header/Header.svelte';
   import Footer from '$lib/footer/Footer.svelte';
   import '../app.css';
+  import { onMount } from 'svelte';
+  import { initAuth } from '$lib/services/auth';
+
+  let authSubscription: { subscription: { unsubscribe: () => void } } | null = null;
+
+  onMount(async () => {
+    // Initialize authentication
+    authSubscription = await initAuth();
+
+    // Clean up on component unmount
+    return () => {
+      if (authSubscription?.subscription) {
+        authSubscription.subscription.unsubscribe();
+      }
+    };
+  });
 </script>
 
 <div class="app">
