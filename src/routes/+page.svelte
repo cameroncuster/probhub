@@ -53,7 +53,18 @@
 
   // Function to sort problems by score (likes - dislikes)
   function sortProblemsByScore(problemsToSort: Problem[]): Problem[] {
-    return [...problemsToSort].sort((a, b) => calculateScore(b) - calculateScore(a));
+    return [...problemsToSort].sort((a, b) => {
+      const scoreA = calculateScore(a);
+      const scoreB = calculateScore(b);
+
+      // If scores are different, sort by score
+      if (scoreA !== scoreB) {
+        return scoreB - scoreA;
+      }
+
+      // If scores are the same, sort alphabetically
+      return a.name.localeCompare(b.name);
+    });
   }
 
   // Function to handle like/dislike actions
