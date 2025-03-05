@@ -1,13 +1,14 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import { fetchProblems } from '$lib/services/codeforces';
+  import type { Problem } from '$lib/services/codeforces';
 
-  let problems = [];
-  let loading = false;
-  let error = null;
+  let problems: Problem[] = [];
+  let loading: boolean = false;
+  let error: string | null = null;
 
   // Function to get the rating color based on difficulty
-  function getRatingColor(rating) {
+  function getRatingColor(rating: number): string {
     if (rating >= 3000) return 'legendary-grandmaster';
     if (rating >= 2600) return 'international-grandmaster';
     if (rating >= 2400) return 'grandmaster';
@@ -21,7 +22,7 @@
   }
 
   // Function to get the rating tier name
-  function getRatingTierName(rating) {
+  function getRatingTierName(rating: number): string {
     if (rating >= 2900) return 'Legendary Grandmaster';
     if (rating >= 2600) return 'International Grandmaster';
     if (rating >= 2400) return 'Grandmaster';
@@ -35,7 +36,7 @@
   }
 
   // Function to format date to a more readable format
-  function formatDate(dateString) {
+  function formatDate(dateString: string): string {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
@@ -45,7 +46,7 @@
   }
 
   // Function to handle like/dislike actions
-  function handleLike(problemId, isLike) {
+  function handleLike(problemId: string, isLike: boolean): void {
     problems = problems.map((problem) => {
       if (problem.id === problemId) {
         if (isLike) {
@@ -59,7 +60,7 @@
   }
 
   // Function to load problems
-  async function loadProblems() {
+  async function loadProblems(): Promise<void> {
     loading = true;
     error = null;
 
@@ -285,10 +286,6 @@
   @media (max-width: 768px) {
     .container {
       padding: 1rem 0.5rem;
-    }
-
-    h1 {
-      font-size: 1.75rem;
     }
 
     .card {

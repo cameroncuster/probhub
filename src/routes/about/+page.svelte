@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   // About page for Probhub
 </script>
 
@@ -57,7 +57,8 @@
     <h3>Canon Problems</h3>
     <p>
       Inspired by "Canon Events" from <i>Across the Spiderverse</i>, Canon Problems are the problems
-      that after solving, fundamentally changed the way you approach competitive programming problems.
+      that after solving, fundamentally changed the way you approach competitive programming
+      problems.
     </p>
     <p>
       Probhub aims to collect these Canon Problems to enable you to maximize the effectiveness of
@@ -85,10 +86,6 @@
     padding: 2rem 1rem;
   }
 
-  h1 {
-    margin-bottom: 2rem;
-  }
-
   section {
     margin-bottom: 2.5rem;
   }
@@ -104,8 +101,7 @@
     line-height: 1.6;
   }
 
-  ul,
-  ol {
+  ul {
     margin-left: 1.5rem;
     margin-bottom: 1rem;
   }
@@ -113,9 +109,5 @@
   li {
     margin-bottom: 0.5rem;
     line-height: 1.6;
-  }
-
-  strong {
-    color: var(--heading-color);
   }
 </style>
