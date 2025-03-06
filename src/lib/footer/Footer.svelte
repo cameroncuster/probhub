@@ -6,7 +6,7 @@
   <div class="container">
     <div class="footer-content">
       <div class="copyright">
-        © {new Date().getFullYear()} ProbHub
+        © {new Date().getFullYear()} ProbHub (18+)
       </div>
       <div class="links">
         <a
