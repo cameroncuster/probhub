@@ -2,6 +2,33 @@
   import { page } from '$app/stores';
   import { user } from '$lib/services/auth';
   import { signInWithGithub, signOut } from '$lib/services/auth';
+  import { onMount } from 'svelte';
+
+  // Add a loading state to prevent button flash
+  let authLoading = true;
+
+  // Use a flag to ensure we've fully mounted before showing anything
+  let isMounted = false;
+
+  onMount(() => {
+    // Mark component as mounted
+    isMounted = true;
+
+    // Set up a subscription to the user store
+    const unsubscribe = user.subscribe((value) => {
+      // Only set authLoading to false if we're mounted
+      if (isMounted) {
+        // Small delay to ensure DOM is ready
+        authLoading = false;
+      }
+    });
+
+    // Clean up subscription on component unmount
+    return () => {
+      isMounted = false;
+      unsubscribe();
+    };
+  });
 
   async function handleLogin() {
     try {
@@ -37,7 +64,7 @@
           <a href="/about">About</a>
         </li>
       </ul>
-      <div class="auth-buttons">
+      <div class="auth-buttons" class:hidden={authLoading}>
         {#if $user}
           <button class="logout-button" on:click={handleLogout}>Logout</button>
         {:else}
@@ -129,6 +156,15 @@
   .auth-buttons {
     display: flex;
     align-items: center;
+    min-width: 70px; /* Ensure consistent width to prevent layout shift */
+    justify-content: flex-end;
+    opacity: 1;
+    transition: opacity 0.2s ease;
+  }
+
+  .auth-buttons.hidden {
+    opacity: 0;
+    visibility: hidden;
   }
 
   .login-button,
