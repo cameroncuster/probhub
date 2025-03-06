@@ -23,29 +23,46 @@
     name?: string;
   }[] = [];
 
-  // Redirect if not logged in and check admin status
+  // Initialize auth state
   onMount(() => {
-    userUnsubscribe = user.subscribe(async (value) => {
-      if (value === null) {
-        // User is not logged in, redirect to home
+    const initAuth = async () => {
+      // Get current auth state directly first
+      const { data } = await supabase.auth.getSession();
+      const currentUser = data.session?.user || null;
+
+      if (!currentUser) {
+        console.log('No user found on initial check, redirecting to home');
         goto('/');
-      } else {
-        // Check if user is admin
-        checkingAdmin = true;
-        try {
-          isAdminUser = await isAdmin(value.id);
-          if (!isAdminUser) {
-            error =
-              'You do not have permission to submit problems. Only admins can submit problems.';
-          }
-        } catch (err) {
-          console.error('Error checking admin status:', err);
-          error = 'Failed to verify your permissions. Please try again later.';
-        } finally {
-          checkingAdmin = false;
-        }
+        return;
       }
-    });
+
+      // If we have a user, check admin status
+      checkingAdmin = true;
+
+      try {
+        isAdminUser = await isAdmin(currentUser.id);
+
+        if (!isAdminUser) {
+          error = 'You do not have permission to submit problems. Only admins can submit problems.';
+        }
+      } catch (err) {
+        console.error('Error checking admin status:', err);
+        error = 'Failed to verify your permissions. Please try again later.';
+      } finally {
+        checkingAdmin = false;
+      }
+
+      // Now set up the subscription for future changes
+      userUnsubscribe = user.subscribe((value) => {
+        if (value === null && currentUser !== null) {
+          // User logged out after initial load
+          console.log('User logged out, redirecting to home');
+          goto('/');
+        }
+      });
+    };
+
+    initAuth();
 
     return () => {
       if (userUnsubscribe) {
@@ -223,7 +240,7 @@
             processingResults[i] = {
               url,
               status: 'success',
-              name: result.problem.name,
+              name: result.problem?.name,
               message: 'Added successfully'
             };
           }
@@ -424,6 +441,7 @@
     font-size: 1.05rem;
     box-sizing: border-box;
     -webkit-appearance: none;
+    appearance: none;
     font-family: inherit;
     resize: vertical;
     min-height: 150px;
