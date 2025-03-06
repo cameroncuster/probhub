@@ -75,25 +75,36 @@
 
   // Function to extract contest ID and problem index from URL
   function extractProblemInfo(problemUrl: string) {
-    const urlPattern = /contest\/(\d+)\/problem\/([A-Z\d]+)/;
-    const match = problemUrl.match(urlPattern);
+    // Support both contest and problemset URL formats
+    const contestPattern = /contest\/(\d+)\/problem\/([A-Z\d]+)/;
+    const problemsetPattern = /problemset\/problem\/(\d+)\/([A-Z\d]+)/;
+
+    const contestMatch = problemUrl.match(contestPattern);
+    const problemsetMatch = problemUrl.match(problemsetPattern);
+
+    // Use whichever pattern matched
+    const match = contestMatch || problemsetMatch;
 
     if (!match) {
       return null;
     }
 
+    // Normalize URL to contest format for consistency
+    const normalizedUrl = `https://codeforces.com/contest/${match[1]}/problem/${match[2]}`;
+
     return {
       contestId: match[1],
       index: match[2],
       problemId: `${match[1]}${match[2]}`,
-      url: problemUrl.trim()
+      url: normalizedUrl // Use normalized URL instead of original
     };
   }
 
   // Function to extract all valid URLs from the input text
   function extractUrls(text: string): string[] {
-    // Match URLs that contain "codeforces.com/contest" and "/problem/"
-    const urlRegex = /https?:\/\/(?:www\.)?codeforces\.com\/contest\/\d+\/problem\/[A-Z\d]+/g;
+    // Match URLs that contain either contest or problemset format
+    const urlRegex =
+      /https?:\/\/(?:www\.)?codeforces\.com\/(?:contest\/\d+\/problem\/[A-Z\d]+|problemset\/problem\/\d+\/[A-Z\d]+)/g;
     return (text.match(urlRegex) || []).map((url) => url.trim());
   }
 
@@ -347,16 +358,12 @@
           <textarea
             id="problemUrls"
             bind:value={problemUrls}
-            placeholder="Paste one or more Codeforces problem URLs here, one per line or separated by spaces:&#10;&#10;https://codeforces.com/contest/1234/problem/A&#10;https://codeforces.com/contest/1235/problem/B"
+            placeholder="Paste one or more Codeforces problem URLs here, one per line or separated by spaces:&#10;&#10;https://codeforces.com/contest/4/problem/A&#10;https://codeforces.com/problemset/problem/4/A"
             required
             disabled={loading}
             rows="8"
           ></textarea>
-          <small>
-            Format: https://codeforces.com/contest/1234/problem/A
-            <br />
-            You can paste multiple URLs - one per line, or separated by spaces.
-          </small>
+          <small> You can paste multiple URLs - one per line, or separated by spaces. </small>
         </div>
 
         <div class="form-actions">
