@@ -8,6 +8,7 @@
 
   // Form data
   let problemUrls = '';
+  let cfHandle = '';
   let loading = false;
   let error: string | null = null;
   let success = false;
@@ -21,6 +22,7 @@
     status: 'pending' | 'success' | 'error';
     message?: string;
     name?: string;
+    details?: string;
   }[] = [];
 
   // Initialize auth state
@@ -103,14 +105,21 @@
     url: string;
   }) {
     try {
-      // Check if problem already exists in our database
-      const { data: existingProblem } = await supabase
+      // Check if problem already exists in our database by URL
+      const { data: existingProblems, error: queryError } = await supabase
         .from('problems')
         .select('id')
-        .eq('id', problemInfo.problemId)
-        .single();
+        .eq('url', problemInfo.url);
 
-      if (existingProblem) {
+      if (queryError) {
+        return {
+          success: false,
+          message: `Database query error: ${queryError.message}`,
+          problemInfo
+        };
+      }
+
+      if (existingProblems && existingProblems.length > 0) {
         return {
           success: false,
           message: 'Problem already exists in database',
@@ -138,17 +147,14 @@
       return {
         success: true,
         problem: {
-          id: problemInfo.problemId,
           name: problem.name,
           tags: problem.tags || [],
-          difficulty: problem.rating || 1500,
+          difficulty: problem.rating,
           url: problemInfo.url,
-          solved: 0,
-          date_added: new Date().toISOString(),
-          added_by: $user?.email?.split('@')[0] || 'anonymous',
-          added_by_url: `https://github.com/${$user?.email?.split('@')[0] || 'anonymous'}`,
-          likes: 0,
-          dislikes: 0
+          added_by: cfHandle || 'tourist',
+          added_by_url: cfHandle
+            ? `https://codeforces.com/profile/${cfHandle}`
+            : 'https://codeforces.com/profile/tourist'
         }
       };
     } catch (err) {
@@ -170,6 +176,13 @@
 
     if (!isAdminUser) {
       error = 'You do not have permission to submit problems. Only admins can submit problems.';
+      return;
+    }
+
+    // Validate CF handle if provided
+    if (cfHandle && !cfHandle.match(/^[a-zA-Z0-9._-]{3,24}$/)) {
+      error =
+        'Invalid Codeforces handle format. Handles typically contain 3-24 letters, numbers, dots, underscores, or hyphens.';
       return;
     }
 
@@ -228,13 +241,26 @@
 
         // Try to insert the problem
         try {
-          const { error: insertError } = await supabase.from('problems').insert(result.problem);
+          const { error: insertError } = await supabase.from('problems').upsert(result.problem, {
+            onConflict: 'url',
+            ignoreDuplicates: true
+          });
 
           if (insertError) {
+            console.error('Database insert error:', insertError);
+
+            let errorMessage = insertError.message;
+
+            // Simplify error messages for users
+            if (errorMessage.includes('duplicate key value violates unique constraint')) {
+              errorMessage = 'This problem already exists in the database';
+            }
+
             processingResults[i] = {
               url,
               status: 'error',
-              message: `Database error: ${insertError.message}`
+              message: `Database error: ${errorMessage}`,
+              details: insertError.details || ''
             };
           } else {
             processingResults[i] = {
@@ -272,6 +298,7 @@
   // Clear the form
   function clearForm() {
     problemUrls = '';
+    cfHandle = '';
     processingResults = [];
     error = null;
     success = false;
@@ -301,6 +328,21 @@
     {#if isAdminUser && !checkingAdmin}
       <form on:submit|preventDefault={processProblems}>
         <div class="form-group">
+          <label for="cfHandle">Your Codeforces Handle</label>
+          <input
+            type="text"
+            id="cfHandle"
+            bind:value={cfHandle}
+            placeholder="Enter your Codeforces handle (optional)"
+            disabled={loading}
+          />
+          <small>
+            If provided, you'll be credited as the submitter of these problems with a link to your
+            CF profile.
+          </small>
+        </div>
+
+        <div class="form-group">
           <label for="problemUrls">Problem URLs <span class="required">*</span></label>
           <textarea
             id="problemUrls"
@@ -321,11 +363,6 @@
           <button type="submit" class="submit-button" disabled={loading}>
             {loading ? 'Processing...' : 'Process Problems'}
           </button>
-          {#if processingResults.length > 0}
-            <button type="button" class="clear-button" on:click={clearForm} disabled={loading}>
-              Clear
-            </button>
-          {/if}
         </div>
       </form>
 
@@ -357,18 +394,41 @@
                     <span class="success-text">✓ {result.message}</span>
                   {:else}
                     <span class="error-text">✗ {result.message}</span>
+                    {#if result.details && import.meta.env.DEV}
+                      <div class="error-details">
+                        <small>{result.details}</small>
+                      </div>
+                    {/if}
                   {/if}
                 </div>
               </div>
             {/each}
           </div>
           <div class="results-summary">
-            <p>
-              Total: {processingResults.length} | Success: {processingResults.filter(
-                (r) => r.status === 'success'
-              ).length} | Failed: {processingResults.filter((r) => r.status === 'error').length} | Pending:
-              {processingResults.filter((r) => r.status === 'pending').length}
-            </p>
+            <div class="stats-container">
+              <div class="stat-item">
+                <span class="stat-label">Total</span>
+                <span class="stat-value">{processingResults.length}</span>
+              </div>
+              <div class="stat-item success">
+                <span class="stat-label">Success</span>
+                <span class="stat-value"
+                  >{processingResults.filter((r) => r.status === 'success').length}</span
+                >
+              </div>
+              <div class="stat-item error">
+                <span class="stat-label">Failed</span>
+                <span class="stat-value"
+                  >{processingResults.filter((r) => r.status === 'error').length}</span
+                >
+              </div>
+              <div class="stat-item pending">
+                <span class="stat-label">Pending</span>
+                <span class="stat-value"
+                  >{processingResults.filter((r) => r.status === 'pending').length}</span
+                >
+              </div>
+            </div>
           </div>
         </div>
       {/if}
@@ -483,29 +543,11 @@
     max-width: none;
   }
 
-  .clear-button {
-    background-color: var(--tertiary-color);
-    color: var(--text-color);
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    padding: 1rem 2rem;
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    min-width: 120px;
-  }
-
   .submit-button:hover {
     background-color: var(--primary-color-dark);
   }
 
-  .clear-button:hover {
-    background-color: var(--border-color);
-  }
-
-  .submit-button:disabled,
-  .clear-button:disabled {
+  .submit-button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
   }
@@ -604,6 +646,54 @@
     font-weight: 500;
   }
 
+  .error-details {
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+    color: #d32f2f;
+    word-break: break-all;
+  }
+
+  .stats-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.75rem 1.25rem;
+    background-color: var(--background-color);
+    border-radius: 6px;
+    min-width: 80px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  .stat-label {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  .stat-item.success .stat-value {
+    color: #4caf50;
+  }
+
+  .stat-item.error .stat-value {
+    color: #f44336;
+  }
+
+  .stat-item.pending .stat-value {
+    color: #2196f3;
+  }
+
   @media (max-width: 768px) {
     .container {
       padding: 1rem 0.75rem;
@@ -627,8 +717,7 @@
       flex-direction: column;
     }
 
-    .submit-button,
-    .clear-button {
+    .submit-button {
       width: 100%;
       max-width: none;
       padding: 0.9rem 1.5rem;
@@ -653,5 +742,39 @@
     .submit-form {
       padding: 1rem;
     }
+
+    .stats-container {
+      justify-content: space-between;
+    }
+
+    .stat-item {
+      flex: 1;
+      min-width: 60px;
+      padding: 0.5rem;
+    }
+
+    .stat-value {
+      font-size: 1.25rem;
+    }
+  }
+
+  input {
+    width: 100%;
+    padding: 0.9rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-size: 1.05rem;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    appearance: none;
+    font-family: inherit;
+  }
+
+  input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.2);
   }
 </style>
