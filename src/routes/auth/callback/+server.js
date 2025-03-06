@@ -14,9 +14,13 @@ export const GET = async (event) => {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
       throw redirect(303, `/${next.slice(1)}`);
+    } else {
+      console.error('Auth error:', error);
+      // Redirect to home page or login page with an error parameter
+      throw redirect(303, '/?auth_error=true');
     }
   }
 
-  // return the user to an error page with instructions
-  throw redirect(303, '/auth/auth-code-error');
+  // If no code is present, redirect to home
+  throw redirect(303, '/');
 };

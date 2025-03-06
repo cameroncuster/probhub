@@ -36,20 +36,12 @@
         <li class:active={$page.url.pathname === '/about'}>
           <a href="/about">About</a>
         </li>
-        {#if $user}
-          <li class:active={$page.url.pathname === '/submit'}>
-            <a href="/submit">Submit Problem</a>
-          </li>
-        {/if}
       </ul>
       <div class="auth-buttons">
         {#if $user}
-          <div class="user-info">
-            <span class="user-name">{$user.email?.split('@')[0] || 'User'}</span>
-            <button class="logout-button" on:click={handleLogout}>Logout</button>
-          </div>
+          <button class="logout-button" on:click={handleLogout}>Logout</button>
         {:else}
-          <button class="login-button" on:click={handleLogin} title="Login with Google">
+          <button class="login-button" on:click={handleLogin} title="Login with GitHub">
             <span class="login-text">Sign in</span>
           </button>
         {/if}
@@ -183,38 +175,48 @@
     color: var(--text-color);
   }
 
-  .user-info {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-
-  .user-name {
-    font-weight: 600;
-    font-size: 0.875rem;
-  }
-
   @media (max-width: 768px) {
     .container {
       padding: 0 1rem;
     }
 
     nav {
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 0.75rem;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    ul {
+      gap: 1rem;
+    }
+
+    .login-button,
+    .logout-button {
+      padding: 0.3rem 0.6rem;
+      font-size: 0.75rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .container {
+      padding: 0 0.75rem;
     }
 
     .logo span {
-      display: none;
+      font-size: 1.1rem;
     }
 
-    .user-name {
-      display: none;
+    nav {
+      gap: 0.75rem;
     }
 
-    .login-button {
-      padding: 0.4rem 0.75rem;
+    ul {
+      gap: 0.75rem;
+    }
+
+    nav a {
+      font-size: 0.9rem;
     }
   }
 </style>

@@ -87,8 +87,30 @@
     }
 
     .footer-content {
-      flex-direction: column;
-      gap: 1rem;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    footer {
+      padding: 1.25rem 0;
+    }
+
+    .container {
+      padding: 0 0.75rem;
+    }
+
+    .copyright,
+    .links a {
+      font-size: 0.8rem;
+    }
+
+    .links a svg {
+      width: 18px;
+      height: 18px;
     }
   }
 </style>
