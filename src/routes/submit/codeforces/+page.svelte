@@ -75,12 +75,32 @@
 
   // Function to extract contest ID and problem index from URL
   function extractProblemInfo(problemUrl: string) {
-    // Support both contest and problemset URL formats
-    const contestPattern = /contest\/(\d+)\/problem\/([A-Z\d]+)/;
-    const problemsetPattern = /problemset\/problem\/(\d+)\/([A-Z\d]+)/;
+    // First normalize the URL to remove http/https/www and ensure it starts with a domain
+    const normalizedUrl = problemUrl.trim();
 
-    const contestMatch = problemUrl.match(contestPattern);
-    const problemsetMatch = problemUrl.match(problemsetPattern);
+    // Handle shorthand "CF" format (e.g., "CF 1794E")
+    const cfShortPattern = /^CF\s*(\d+)([A-Z\d]+)$/i;
+    const cfShortMatch = normalizedUrl.match(cfShortPattern);
+    if (cfShortMatch) {
+      const normalizedFinalUrl = `https://codeforces.com/contest/${cfShortMatch[1]}/problem/${cfShortMatch[2]}`;
+      return {
+        contestId: cfShortMatch[1],
+        index: cfShortMatch[2],
+        problemId: `${cfShortMatch[1]}${cfShortMatch[2]}`,
+        url: normalizedFinalUrl
+      };
+    }
+
+    // Remove http/https/www if present
+    const cleanUrl = normalizedUrl.replace(/^(https?:\/\/)?(www\.)?/, '');
+
+    // Support both codeforces.com and mirror.codeforces.com
+    const contestPattern = /(?:mirror\.)?codeforces\.com\/contest\/(\d+)\/problem\/([A-Z\d]+)/;
+    const problemsetPattern =
+      /(?:mirror\.)?codeforces\.com\/problemset\/problem\/(\d+)\/([A-Z\d]+)/;
+
+    const contestMatch = cleanUrl.match(contestPattern);
+    const problemsetMatch = cleanUrl.match(problemsetPattern);
 
     // Use whichever pattern matched
     const match = contestMatch || problemsetMatch;
@@ -89,23 +109,36 @@
       return null;
     }
 
-    // Normalize URL to contest format for consistency
-    const normalizedUrl = `https://codeforces.com/contest/${match[1]}/problem/${match[2]}`;
+    // Always normalize to the main codeforces.com URL for consistency
+    const normalizedFinalUrl = `https://codeforces.com/contest/${match[1]}/problem/${match[2]}`;
 
     return {
       contestId: match[1],
       index: match[2],
       problemId: `${match[1]}${match[2]}`,
-      url: normalizedUrl // Use normalized URL instead of original
+      url: normalizedFinalUrl
     };
   }
 
   // Function to extract all valid URLs from the input text
   function extractUrls(text: string): string[] {
-    // Match URLs that contain either contest or problemset format
-    const urlRegex =
-      /https?:\/\/(?:www\.)?codeforces\.com\/(?:contest\/\d+\/problem\/[A-Z\d]+|problemset\/problem\/\d+\/[A-Z\d]+)/g;
-    return (text.match(urlRegex) || []).map((url) => url.trim());
+    // Split by newlines or spaces to handle both formats
+    const lines = text.split(/[\n\s]+/).filter((line) => line.trim());
+
+    const validUrls: string[] = [];
+
+    for (const line of lines) {
+      // Skip empty lines
+      if (!line.trim()) continue;
+
+      // Try to extract problem info for each line
+      const info = extractProblemInfo(line.trim());
+      if (info) {
+        validUrls.push(info.url);
+      }
+    }
+
+    return validUrls;
   }
 
   // Function to fetch problem data from Codeforces API
@@ -119,8 +152,10 @@
       // Check if problem already exists in our database by URL
       const { data: existingProblems, error: queryError } = await supabase
         .from('problems')
-        .select('id')
-        .eq('url', problemInfo.url);
+        .select('id, url')
+        .or(
+          `url.eq.${problemInfo.url},url.eq.https://codeforces.com/problemset/problem/${problemInfo.contestId}/${problemInfo.index}`
+        );
 
       if (queryError) {
         return {
@@ -456,6 +491,20 @@
     font-size: 1rem;
     box-sizing: border-box;
     font-family: inherit;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--text-muted);
+    opacity: 0.7;
+  }
+
+  input:disabled,
+  textarea:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: var(--background-color);
+    color: var(--text-color);
   }
 
   textarea {

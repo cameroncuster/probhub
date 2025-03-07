@@ -61,26 +61,57 @@
 
   // Function to extract problem ID from Kattis URL
   function extractProblemInfo(problemUrl: string) {
-    const kattisPattern = /open\.kattis\.com\/problems\/([a-z0-9]+)/;
-    const match = problemUrl.match(kattisPattern);
+    // First normalize the URL by trimming
+    const normalizedUrl = problemUrl.trim();
+
+    // Handle bare problem ID (just the name)
+    if (/^[a-z0-9]+$/.test(normalizedUrl)) {
+      const problemId = normalizedUrl;
+      return {
+        problemId,
+        url: `https://open.kattis.com/problems/${problemId}`
+      };
+    }
+
+    // Remove http/https/www if present
+    const cleanUrl = normalizedUrl.replace(/^(https?:\/\/)?(www\.)?/, '');
+
+    // Handle full URL format - support both kattis.com and open.kattis.com
+    const kattisPattern = /(?:open\.)?kattis\.com\/problems\/([a-z0-9]+)/;
+    const match = cleanUrl.match(kattisPattern);
 
     if (!match) {
       return null;
     }
 
     const problemId = match[1];
-    const normalizedUrl = `https://open.kattis.com/problems/${problemId}`;
+    const normalizedFinalUrl = `https://open.kattis.com/problems/${problemId}`;
 
     return {
       problemId,
-      url: normalizedUrl
+      url: normalizedFinalUrl
     };
   }
 
   // Function to extract all valid URLs from the input text
   function extractUrls(text: string): string[] {
-    const urlRegex = /https?:\/\/(?:www\.)?open\.kattis\.com\/problems\/[a-z0-9]+/g;
-    return (text.match(urlRegex) || []).map((url) => url.trim());
+    // Split by newlines or spaces to handle both formats
+    const lines = text.split(/[\n\s]+/).filter((line) => line.trim());
+
+    const validUrls: string[] = [];
+
+    for (const line of lines) {
+      // Skip empty lines
+      if (!line.trim()) continue;
+
+      // Try to extract problem info for each line
+      const info = extractProblemInfo(line.trim());
+      if (info) {
+        validUrls.push(info.url);
+      }
+    }
+
+    return validUrls;
   }
 
   // Function to convert Kattis difficulty (1-10) to Codeforces-like scale (800-3500)
@@ -287,12 +318,12 @@
           <textarea
             id="problemUrls"
             bind:value={problemUrls}
-            placeholder="https://open.kattis.com/problems/hello&#10;https://open.kattis.com/problems/twostones"
+            placeholder="kattis.com/problems/hello&#10;open.kattis.com/problems/twostones&#10;customscontrols"
             required
             disabled={loading}
             rows="8"
           ></textarea>
-          <small>Enter Kattis problem URLs</small>
+          <small>Enter Kattis problem URLs or problem IDs</small>
         </div>
 
         <div class="form-actions">
@@ -314,12 +345,14 @@
               >
                 <div class="result-url">
                   <a href={result.url} target="_blank" rel="noopener noreferrer">
-                    {result.url.replace(
-                      /^https?:\/\/(?:www\.)?open\.kattis\.com\/problems\/([a-z0-9]+).*$/,
-                      '$1'
-                    )}
                     {#if result.name}
-                      - {result.name}{/if}
+                      {result.name}
+                    {:else}
+                      {result.url.replace(
+                        /^https?:\/\/(?:www\.)?open\.kattis\.com\/problems\/([a-z0-9]+).*$/,
+                        '$1'
+                      )}
+                    {/if}
                   </a>
                 </div>
                 <div class="result-status">
@@ -396,6 +429,20 @@
     font-family: inherit;
   }
 
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--text-muted);
+    opacity: 0.7;
+  }
+
+  input:disabled,
+  textarea:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: var(--background-color);
+    color: var(--text-color);
+  }
+
   textarea {
     resize: vertical;
     min-height: 150px;
@@ -465,6 +512,7 @@
     background-color: var(--background-color);
     border-radius: 4px;
     border-left: 4px solid var(--border-color);
+    margin-bottom: 0.5rem;
   }
 
   .result-item.success {
@@ -477,11 +525,13 @@
   .result-url {
     font-weight: 500;
     word-break: break-all;
+    flex: 1;
   }
 
   .result-url a {
     color: var(--text-color);
     text-decoration: none;
+    display: inline-block;
   }
 
   .result-url a:hover {
@@ -492,6 +542,7 @@
   .result-status {
     white-space: nowrap;
     margin-left: 1rem;
+    font-weight: 500;
   }
 
   .pending {
@@ -516,13 +567,13 @@
     }
 
     .result-item {
-      flex-direction: column;
-      align-items: flex-start;
+      flex-direction: row;
+      align-items: center;
       gap: 0.5rem;
     }
 
     .result-status {
-      margin-left: 0;
+      margin-left: 0.5rem;
     }
   }
 </style>
