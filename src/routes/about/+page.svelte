@@ -36,6 +36,11 @@
           >Codeforces EDU</a
         >
       </li>
+      <li>
+        <a href="https://judge.yosupo.jp/" target="_blank" rel="noopener noreferrer"
+          >Library Checker</a
+        >
+      </li>
     </ul>
 
     <h3>Beyond the Fundamentals</h3>
