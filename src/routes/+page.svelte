@@ -12,7 +12,7 @@
   let userFeedback: Record<string, 'like' | 'dislike' | null> = {};
 
   // Filtering options
-  let selectedSources: Set<'codeforces' | 'kattis'> = new Set(['codeforces', 'kattis']);
+  let selectedSource: 'all' | 'codeforces' | 'kattis' = 'all';
   let filteredProblems: Problem[] = [];
 
   // Function to get the rating color based on difficulty
@@ -222,14 +222,16 @@
     }
   }
 
-  // Function to filter problems based on selected filters
+  // Function to filter problems based on selected source
   function filterProblems(problemsToFilter: Problem[]): Problem[] {
-    return problemsToFilter.filter((problem) => {
-      // If no sources are selected, show all problems
-      if (selectedSources.size === 0) return true;
-      // Otherwise, only show problems from selected sources
-      return selectedSources.has(problem.source as 'codeforces' | 'kattis');
-    });
+    if (selectedSource === 'all') return problemsToFilter;
+    return problemsToFilter.filter((problem) => problem.source === selectedSource);
+  }
+
+  // Function to select source
+  function selectSource(source: 'all' | 'codeforces' | 'kattis') {
+    selectedSource = source;
+    updateFilteredProblems();
   }
 
   // Function to update filtered problems
@@ -238,17 +240,6 @@
     const filtered = filterProblems(problems);
     // Then sort by score
     filteredProblems = sortProblemsByScore(filtered);
-  }
-
-  // Function to toggle source selection
-  function toggleSource(source: 'codeforces' | 'kattis') {
-    if (selectedSources.has(source)) {
-      selectedSources.delete(source);
-    } else {
-      selectedSources.add(source);
-    }
-    selectedSources = selectedSources; // Trigger reactivity
-    updateFilteredProblems();
   }
 
   // Load problems on mount
@@ -298,16 +289,23 @@
     <div class="filter-bar">
       <div class="source-buttons">
         <button
-          class="source-button {selectedSources.has('codeforces') ? 'active' : ''}"
-          on:click={() => toggleSource('codeforces')}
+          class="source-button {selectedSource === 'all' ? 'active' : ''}"
+          on:click={() => selectSource('all')}
+          title="All Problems"
+        >
+          All Problems
+        </button>
+        <button
+          class="source-button {selectedSource === 'codeforces' ? 'active' : ''}"
+          on:click={() => selectSource('codeforces')}
           title="Codeforces"
         >
           <img src={codeforcesLogo} alt="Codeforces" class="source-icon" />
           Codeforces
         </button>
         <button
-          class="source-button {selectedSources.has('kattis') ? 'active' : ''}"
-          on:click={() => toggleSource('kattis')}
+          class="source-button {selectedSource === 'kattis' ? 'active' : ''}"
+          on:click={() => selectSource('kattis')}
           title="Kattis"
         >
           <img src={kattisLogo} alt="Kattis" class="source-icon" />
