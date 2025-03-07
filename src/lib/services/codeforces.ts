@@ -2,40 +2,14 @@
  * Service for providing programming problems data
  */
 import { supabase } from './database';
+import type { Problem, ProblemRecord } from '../types/problem';
 
 /**
- * Database record type from Supabase
+ * Determine the problem source based on URL
  */
-type ProblemRecord = {
-  id: string;
-  name: string;
-  tags: string[];
-  difficulty: number;
-  url: string;
-  solved: number | null;
-  date_added: string;
-  added_by: string;
-  added_by_url: string;
-  likes: number;
-  dislikes: number;
-};
-
-/**
- * Problem interface from our app's perspective
- */
-export type Problem = {
-  id: string;
-  name: string;
-  tags: string[];
-  difficulty: number;
-  url: string;
-  solved: number;
-  dateAdded: string;
-  addedBy: string;
-  addedByUrl: string;
-  likes: number;
-  dislikes: number;
-};
+function getProblemSource(url: string): 'codeforces' | 'kattis' {
+  return url.includes('kattis.com') ? 'kattis' : 'codeforces';
+}
 
 /**
  * Fetches problems from the database
@@ -62,7 +36,8 @@ export async function fetchProblems(): Promise<Problem[]> {
       addedBy: record.added_by,
       addedByUrl: record.added_by_url,
       likes: record.likes,
-      dislikes: record.dislikes
+      dislikes: record.dislikes,
+      source: getProblemSource(record.url)
     }));
   } catch (err) {
     console.error('Failed to fetch problems:', err);
@@ -149,7 +124,8 @@ export async function updateProblemFeedback(
       addedBy: record.added_by,
       addedByUrl: record.added_by_url,
       likes: record.likes,
-      dislikes: record.dislikes
+      dislikes: record.dislikes,
+      source: getProblemSource(record.url)
     };
   } catch (err) {
     console.error(`Failed to update problem ${problemId}:`, err);
@@ -195,7 +171,8 @@ export async function fetchProblem(
       addedBy: record.added_by,
       addedByUrl: record.added_by_url,
       likes: record.likes,
-      dislikes: record.dislikes
+      dislikes: record.dislikes,
+      source: getProblemSource(record.url)
     };
   } catch (err) {
     console.error(`Failed to fetch problem ${problemId}:`, err);
