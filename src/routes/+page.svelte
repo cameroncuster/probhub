@@ -51,9 +51,9 @@
   // Function to get difficulty tooltip text
   function getDifficultyTooltip(problem: Problem): string {
     if (problem.source === 'kattis') {
-      return `Kattis difficulty: ${problem.difficulty} (Calculated based on user solve rates)`;
+      return `Kattis difficulty mapped from 1-10 scale to 800-3500 rating range`;
     } else {
-      return `${getRatingTierName(problem.difficulty)} (Rating: ${problem.difficulty})`;
+      return `${getRatingTierName(problem.difficulty)}`;
     }
   }
 
@@ -61,6 +61,11 @@
   function toggleTagVisibility(): void {
     hideTags = !hideTags;
     localStorage.setItem('hideTags', hideTags.toString());
+  }
+
+  // Function to determine if a problem is in the first few rows
+  function isTopRow(index: number): boolean {
+    return index < 3; // Consider first 3 rows as "top rows"
   }
 
   // Function to format date to a more readable format
@@ -363,7 +368,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each filteredProblems as problem}
+          {#each filteredProblems as problem, index}
             <tr>
               <td class="col-source">
                 <span class="problem-source {problem.source}">
@@ -381,11 +386,16 @@
               </td>
               <td class="col-difficulty">
                 <span
-                  class="rating-badge"
+                  class="rating-badge tooltip {isTopRow(index)
+                    ? 'tooltip-bottom'
+                    : ''} {problem.source === 'codeforces' ? 'tooltip-no-cursor' : ''}"
                   style="background-color: var(--{getRatingColor(problem.difficulty)}-color)"
-                  title={getDifficultyTooltip(problem)}
                 >
                   {problem.difficulty}
+                  <span
+                    class="tooltip-text {problem.source === 'codeforces' ? 'tooltip-compact' : ''}"
+                    >{getDifficultyTooltip(problem)}</span
+                  >
                 </span>
               </td>
               <td class="col-tags" class:hidden={hideTags}>
@@ -703,6 +713,31 @@
     .col-feedback {
       width: 100px;
       min-width: 100px;
+    }
+
+    .tooltip .tooltip-text {
+      width: 220px;
+      font-size: 0.75rem;
+      left: 0;
+      transform: translateX(0);
+    }
+
+    .tooltip .tooltip-text::after {
+      left: 10%;
+    }
+
+    /* Ensure tooltip doesn't get cut off on the right edge */
+    tr:last-child .tooltip .tooltip-text,
+    tr:nth-last-child(2) .tooltip .tooltip-text {
+      left: auto;
+      right: 0;
+      transform: translateX(0);
+    }
+
+    tr:last-child .tooltip .tooltip-text::after,
+    tr:nth-last-child(2) .tooltip .tooltip-text::after {
+      left: auto;
+      right: 10%;
     }
   }
 
@@ -1062,5 +1097,74 @@
     border-collapse: collapse;
     background-color: var(--secondary-color);
     overflow: hidden;
+  }
+
+  .tooltip {
+    position: relative;
+    cursor: help;
+  }
+
+  .tooltip.tooltip-no-cursor {
+    cursor: default;
+  }
+
+  .tooltip .tooltip-text {
+    visibility: hidden;
+    width: 280px;
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    text-align: left;
+    border-radius: 6px;
+    padding: 10px;
+    position: absolute;
+    z-index: 1000;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--border-color);
+    font-weight: normal;
+    font-size: 0.8rem;
+    white-space: pre-line;
+    line-height: 1.4;
+  }
+
+  .tooltip .tooltip-text.tooltip-compact {
+    width: auto;
+    min-width: 0;
+    max-width: fit-content;
+    padding: 6px 10px;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .tooltip .tooltip-text::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: var(--secondary-color) transparent transparent transparent;
+  }
+
+  .tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  /* Tooltip that appears below the element instead of above */
+  .tooltip.tooltip-bottom .tooltip-text {
+    bottom: auto;
+    top: 125%;
+  }
+
+  .tooltip.tooltip-bottom .tooltip-text::after {
+    top: auto;
+    bottom: 100%;
+    border-color: transparent transparent var(--secondary-color) transparent;
   }
 </style>
