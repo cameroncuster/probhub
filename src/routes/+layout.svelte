@@ -7,9 +7,13 @@
 
   let authSubscription: { subscription: { unsubscribe: () => void } } | null = null;
 
-  onMount(async () => {
+  onMount(() => {
     // Initialize authentication
-    authSubscription = await initAuth();
+    const initializeAuth = async () => {
+      authSubscription = await initAuth();
+    };
+
+    initializeAuth();
 
     // Clean up on component unmount
     return () => {

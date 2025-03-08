@@ -4,6 +4,8 @@
   import { user } from '$lib/services/auth';
   import { isAdmin } from '$lib/services/auth';
   import { supabase } from '$lib/services/database';
+  import { extractKattisProblemInfo, fetchKattisProblemData } from '$lib/services/kattis';
+  import { insertProblem } from '$lib/services/problem';
   import type { Unsubscriber } from 'svelte/store';
 
   // Form data
@@ -59,40 +61,6 @@
     return () => userUnsubscribe?.();
   });
 
-  // Function to extract problem ID from Kattis URL
-  function extractProblemInfo(problemUrl: string) {
-    // First normalize the URL by trimming
-    const normalizedUrl = problemUrl.trim();
-
-    // Handle bare problem ID (just the name)
-    if (/^[a-z0-9]+$/.test(normalizedUrl)) {
-      const problemId = normalizedUrl;
-      return {
-        problemId,
-        url: `https://open.kattis.com/problems/${problemId}`
-      };
-    }
-
-    // Remove http/https/www if present
-    const cleanUrl = normalizedUrl.replace(/^(https?:\/\/)?(www\.)?/, '');
-
-    // Handle full URL format - support both kattis.com and open.kattis.com
-    const kattisPattern = /(?:open\.)?kattis\.com\/problems\/([a-z0-9]+)/;
-    const match = cleanUrl.match(kattisPattern);
-
-    if (!match) {
-      return null;
-    }
-
-    const problemId = match[1];
-    const normalizedFinalUrl = `https://open.kattis.com/problems/${problemId}`;
-
-    return {
-      problemId,
-      url: normalizedFinalUrl
-    };
-  }
-
   // Function to extract all valid URLs from the input text
   function extractUrls(text: string): string[] {
     // Split by newlines or spaces to handle both formats
@@ -105,94 +73,13 @@
       if (!line.trim()) continue;
 
       // Try to extract problem info for each line
-      const info = extractProblemInfo(line.trim());
+      const info = extractKattisProblemInfo(line.trim());
       if (info) {
         validUrls.push(info.url);
       }
     }
 
     return validUrls;
-  }
-
-  // Function to convert Kattis difficulty (1-10) to Codeforces-like scale (800-3500)
-  function convertKattisDifficulty(kattisRating: number): number {
-    // Kattis rating is 1-10, we want to map it to 800-3500
-    // 1 -> 800
-    // 5 -> 2100
-    // 10 -> 3500
-    return Math.round(800 + ((kattisRating - 1) * (3500 - 800)) / 9);
-  }
-
-  // Function to fetch problem data from Kattis
-  async function fetchProblemData(problemInfo: { problemId: string; url: string }) {
-    try {
-      // Check if problem already exists - only check URL
-      const { data: existingProblems, error: queryError } = await supabase
-        .from('problems')
-        .select('url')
-        .eq('url', problemInfo.url);
-
-      if (queryError) {
-        return {
-          success: false,
-          message: `Database error: ${queryError.message}`,
-          problemInfo
-        };
-      }
-
-      if (existingProblems && existingProblems.length > 0) {
-        return {
-          success: false,
-          message: 'Problem already exists',
-          problemInfo
-        };
-      }
-
-      // Fetch through our proxy endpoint
-      const response = await fetch(`/api/kattis?url=${encodeURIComponent(problemInfo.url)}`);
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to fetch problem');
-      }
-
-      // Parse the HTML
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(data.html, 'text/html');
-
-      const problemName = doc.querySelector('h1')?.textContent?.trim() || problemInfo.problemId;
-
-      // Extract difficulty from the new format
-      const difficultyText = doc
-        .querySelector('.difficulty_number, .difficulty')
-        ?.textContent?.trim();
-      const kattisRating = difficultyText ? parseFloat(difficultyText) : 5; // Default to 5 if not found
-      const difficulty = convertKattisDifficulty(kattisRating);
-
-      // Create problem object without source field
-      const problemData = {
-        name: problemName,
-        tags: [], // Empty array for tags
-        difficulty: difficulty,
-        url: problemInfo.url,
-        added_by: kattisHandle || 'admin',
-        added_by_url: kattisHandle
-          ? `https://open.kattis.com/users/${kattisHandle}`
-          : 'https://open.kattis.com'
-      };
-
-      return {
-        success: true,
-        problem: problemData
-      };
-    } catch (err) {
-      console.error('Error in fetchProblemData:', err);
-      return {
-        success: false,
-        message: err instanceof Error ? err.message : 'Unknown error',
-        problemInfo
-      };
-    }
   }
 
   // Function to process all problem URLs
@@ -227,7 +114,7 @@
     try {
       for (let i = 0; i < urls.length; i++) {
         const url = urls[i];
-        const problemInfo = extractProblemInfo(url);
+        const problemInfo = extractKattisProblemInfo(url);
 
         if (!problemInfo) {
           processingResults[i] = { url, status: 'error', message: 'Invalid URL format' };
@@ -237,32 +124,33 @@
         processingResults[i] = { ...processingResults[i], message: 'Fetching data...' };
         processingResults = [...processingResults];
 
-        const result = await fetchProblemData(problemInfo);
+        // Use the service function instead of the local one
+        const result = await fetchKattisProblemData(problemInfo, kattisHandle);
 
-        if (!result.success) {
-          processingResults[i] = { url, status: 'error', message: result.message };
+        if (!result.success || !result.problem) {
+          processingResults[i] = {
+            url,
+            status: 'error',
+            message: result.message || 'Failed to fetch problem data'
+          };
           continue;
         }
 
         try {
-          const { error: insertError } = await supabase.from('problems').upsert(result.problem, {
-            onConflict: 'url',
-            ignoreDuplicates: true
-          });
+          // Use the insertProblem function from problemDatabase service
+          const insertResult = await insertProblem(result.problem);
 
-          if (insertError) {
+          if (!insertResult.success) {
             processingResults[i] = {
               url,
               status: 'error',
-              message: insertError.message.includes('duplicate key')
-                ? 'Problem already exists'
-                : `Database error: ${insertError.message}`
+              message: insertResult.message
             };
           } else {
             processingResults[i] = {
               url,
               status: 'success',
-              name: result.problem?.name,
+              name: result.problem.name,
               message: 'Added successfully'
             };
           }

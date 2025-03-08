@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { fetchProblems, updateProblemFeedback } from '$lib/services/codeforces';
-  import type { Problem } from '$lib/types/problem';
+  import type { Problem } from '$lib/services/problem';
 
   import codeforcesLogo from '../assets/codeforces.png';
   import kattisLogo from '../assets/kattis.png';
@@ -16,7 +16,8 @@
   let filteredProblems: Problem[] = [];
 
   // Function to get the rating color based on difficulty
-  function getRatingColor(rating: number): string {
+  function getRatingColor(rating: number | undefined): string {
+    if (rating === undefined) return 'unrated';
     if (rating >= 3000) return 'legendary-grandmaster';
     if (rating >= 2600) return 'international-grandmaster';
     if (rating >= 2400) return 'grandmaster';
@@ -30,7 +31,8 @@
   }
 
   // Function to get the rating tier name
-  function getRatingTierName(rating: number): string {
+  function getRatingTierName(rating: number | undefined): string {
+    if (rating === undefined) return 'Unrated';
     if (rating >= 2900) return 'Legendary Grandmaster';
     if (rating >= 2600) return 'International Grandmaster';
     if (rating >= 2400) return 'Grandmaster';
@@ -357,9 +359,11 @@
               <div class="feedback-buttons">
                 <button
                   class="like-button"
-                  class:active={userFeedback[problem.id] === 'like'}
-                  on:click={() => handleLike(problem.id, true)}
-                  title={userFeedback[problem.id] === 'like' ? 'Undo like' : 'Like this problem'}
+                  class:active={problem.id && userFeedback[problem.id] === 'like'}
+                  on:click={() => problem.id && handleLike(problem.id, true)}
+                  title={problem.id && userFeedback[problem.id] === 'like'
+                    ? 'Undo like'
+                    : 'Like this problem'}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -381,9 +385,9 @@
                 </button>
                 <button
                   class="dislike-button"
-                  class:active={userFeedback[problem.id] === 'dislike'}
-                  on:click={() => handleLike(problem.id, false)}
-                  title={userFeedback[problem.id] === 'dislike'
+                  class:active={problem.id && userFeedback[problem.id] === 'dislike'}
+                  on:click={() => problem.id && handleLike(problem.id, false)}
+                  title={problem.id && userFeedback[problem.id] === 'dislike'
                     ? 'Undo dislike'
                     : 'Dislike this problem'}
                 >
