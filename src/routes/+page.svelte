@@ -18,6 +18,9 @@
   let selectedSource: 'all' | 'codeforces' | 'kattis' = 'all';
   let filteredProblems: Problem[] = [];
 
+  // Add a flag to track if we've already shuffled problems
+  let hasShuffledProblems: boolean = false;
+
   // Function to get the rating color based on difficulty
   function getRatingColor(rating: number | undefined): string {
     if (rating === undefined) return 'unrated';
@@ -97,14 +100,27 @@
       problemsByScore[score].push(problem);
     });
 
-    // Shuffle problems within each score group
-    Object.values(problemsByScore).forEach((group) => {
-      // Fisher-Yates shuffle algorithm
-      for (let i = group.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [group[i], group[j]] = [group[j], group[i]];
-      }
-    });
+    // Only shuffle problems within each score group on initial load
+    if (!hasShuffledProblems) {
+      Object.values(problemsByScore).forEach((group) => {
+        // Fisher-Yates shuffle algorithm
+        for (let i = group.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [group[i], group[j]] = [group[j], group[i]];
+        }
+      });
+      hasShuffledProblems = true;
+    } else {
+      // For subsequent sorts, sort by ID within each score group for stability
+      Object.values(problemsByScore).forEach((group) => {
+        group.sort((a, b) => {
+          if (a.id && b.id) {
+            return a.id.localeCompare(b.id);
+          }
+          return 0;
+        });
+      });
+    }
 
     // Get all scores and sort them in descending order
     const scores = Object.keys(problemsByScore)
@@ -235,8 +251,10 @@
     try {
       // Fetch problems
       const fetchedProblems = await fetchProblems();
+
       // Sort by score
       problems = sortProblemsByScore(fetchedProblems);
+
       // Update filtered problems
       updateFilteredProblems();
     } catch (e) {
@@ -263,7 +281,7 @@
   function updateFilteredProblems() {
     // First filter the problems
     const filtered = filterProblems(problems);
-    // Then sort by score
+    // Then sort by score (without shuffling)
     filteredProblems = sortProblemsByScore(filtered);
   }
 
@@ -287,6 +305,9 @@
     if (savedHideTags !== null) {
       hideTags = savedHideTags === 'true';
     }
+
+    // Set hasShuffledProblems to true after initial load
+    hasShuffledProblems = true;
   });
 
   // Save user feedback to localStorage when it changes
