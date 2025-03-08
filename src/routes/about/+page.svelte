@@ -68,6 +68,10 @@
 
   <section>
     <h2>On Practicing</h2>
+    <p>
+      The competitive programming community has produced excellent resources on how to practice
+      effectively. Here are some insightful blog posts that can help guide your practice:
+    </p>
     <ul>
       <li>
         <a href="https://codeforces.com/blog/entry/98806" target="_blank" rel="noopener noreferrer">
@@ -92,6 +96,154 @@
         >
           A Highly Experimental Training Plan for Beginners
         </a>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Algorithm Libraries</h2>
+
+    <h3>From the team that brought you Probhub</h3>
+    <ul>
+      <li>
+        <a
+          href="https://github.com/programming-team-code"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Programming Team Code
+        </a> - A collection of algorithms for competitive programming in C++ and Rust, focused on correctness,
+        efficiency, and readability.
+      </li>
+    </ul>
+
+    <h3>Optimized for ICPC</h3>
+    <ul>
+      <li>
+        <a
+          href="https://github.com/kth-competitive-programming/kactl"
+          target="_blank"
+          rel="noopener noreferrer">KACTL</a
+        > - KTH Algorithm Competition Template Library
+      </li>
+      <li>
+        <a
+          href="https://github.com/ucf-programming-team/hackpack-cpp"
+          target="_blank"
+          rel="noopener noreferrer">UCF Hackpack</a
+        > - University of Central Florida's team reference document
+      </li>
+      <li>
+        <a
+          href="https://github.com/foreverbell/acm-icpc-cheat-sheet"
+          target="_blank"
+          rel="noopener noreferrer">ACM-ICPC Cheat Sheet</a
+        > - Comprehensive reference
+      </li>
+      <li>
+        <a
+          href="https://github.com/UCF-Apocalypse-Attack/hackpack"
+          target="_blank"
+          rel="noopener noreferrer">UCF Apocalypse Attack Hackpack</a
+        > - Another UCF team's reference
+      </li>
+    </ul>
+
+    <h3>Optimized for Online Contests</h3>
+    <ul>
+      <li>
+        <a
+          href="https://github.com/yosupo06/library-checker-problems"
+          target="_blank"
+          rel="noopener noreferrer">Library Checker Solutions</a
+        > - Solutions to the Library Checker problems
+      </li>
+    </ul>
+
+    <h3>Extensive Libraries</h3>
+    <ul>
+      <li>
+        <a
+          href="https://github.com/koosaga/olympiad/tree/master/Library/codes"
+          target="_blank"
+          rel="noopener noreferrer">Koosaga's Library</a
+        > - Comprehensive collection
+      </li>
+      <li>
+        <a
+          href="https://github.com/ShahjalalShohag/code-library"
+          target="_blank"
+          rel="noopener noreferrer">Shahjalal Shohag's Code Library</a
+        > - Extensive algorithm collection
+      </li>
+      <li>
+        <a
+          href="https://github.com/dacin21/dacin21_codebook"
+          target="_blank"
+          rel="noopener noreferrer">dacin21's Codebook</a
+        > - Comprehensive reference
+      </li>
+    </ul>
+
+    <h3>Clean Implementations</h3>
+    <ul>
+      <li>
+        <a
+          href="https://github.com/demidenko/olymp-cpp-lib"
+          target="_blank"
+          rel="noopener noreferrer">Olymp C++ Lib</a
+        > - Clean and readable implementations
+      </li>
+      <li>
+        <a
+          href="https://github.com/brunomaletta/Biblioteca"
+          target="_blank"
+          rel="noopener noreferrer">Biblioteca</a
+        > - Well-organized algorithm library
+      </li>
+    </ul>
+
+    <h3>Top Competitive Programmers' Libraries</h3>
+    <ul>
+      <li>
+        <a href="https://github.com/ecnerwala/cp-book" target="_blank" rel="noopener noreferrer"
+          >ecnerwala's CP Book</a
+        > - High-quality implementations
+      </li>
+      <li>
+        <a href="https://github.com/the-tourist/algo" target="_blank" rel="noopener noreferrer"
+          >tourist's Algorithms</a
+        > - Library by one of the world's top competitive programmers
+      </li>
+      <li>
+        <a
+          href="https://github.com/nealwu/competitive-programming"
+          target="_blank"
+          rel="noopener noreferrer">Neal Wu's Competitive Programming</a
+        > - Comprehensive collection
+      </li>
+      <li>
+        <a href="https://github.com/bqi343/cp-notebook" target="_blank" rel="noopener noreferrer"
+          >bqi343's CP Notebook</a
+        > - Extensive reference
+      </li>
+      <li>
+        <a
+          href="https://github.com/suisen-cp/cp-library-cpp"
+          target="_blank"
+          rel="noopener noreferrer">suisen's CP Library</a
+        > - Modern C++ implementations
+      </li>
+    </ul>
+
+    <h3>Python</h3>
+    <ul>
+      <li>
+        <a
+          href="https://github.com/cheran-senthil/PyRival"
+          target="_blank"
+          rel="noopener noreferrer">PyRival</a
+        > - Python library for competitive programming
       </li>
     </ul>
   </section>
