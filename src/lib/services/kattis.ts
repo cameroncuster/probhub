@@ -1,8 +1,8 @@
 /**
  * Service for providing Kattis programming problems data
  */
-import { supabase } from './database';
-import type { Problem } from '../types/problem';
+import type { Problem } from './problem';
+import { checkProblemExists } from './problem';
 
 /**
  * Extract problem information from a Kattis URL
@@ -13,39 +13,49 @@ export function extractKattisProblemInfo(url: string): {
   problemId: string;
   url: string;
 } | null {
-  // Example Kattis URL: https://open.kattis.com/problems/problemname
-  const kattisRegex = /https?:\/\/(?:open\.)?kattis\.com\/problems\/([a-zA-Z0-9_-]+)/;
-  const match = url.match(kattisRegex);
+  // First normalize the URL by trimming
+  const normalizedUrl = url.trim();
 
-  if (!match) return null;
+  // Handle bare problem ID (just the name)
+  if (/^[a-z0-9]+$/.test(normalizedUrl)) {
+    const problemId = normalizedUrl;
+    return {
+      problemId,
+      url: `https://open.kattis.com/problems/${problemId}`
+    };
+  }
+
+  // Remove http/https/www if present
+  const cleanUrl = normalizedUrl.replace(/^(https?:\/\/)?(www\.)?/, '');
+
+  // Handle full URL format
+  const kattisPattern = /(?:open\.)?kattis\.com\/problems\/([a-z0-9]+)/;
+  const match = cleanUrl.match(kattisPattern);
+
+  if (!match) {
+    return null;
+  }
 
   const problemId = match[1];
+  const normalizedFinalUrl = `https://open.kattis.com/problems/${problemId}`;
 
   return {
     problemId,
-    url
+    url: normalizedFinalUrl
   };
 }
 
 /**
- * Estimates difficulty for a Kattis problem
- * Kattis uses a different scale, so we map it to a Codeforces-like scale
+ * Maps Kattis difficulty (1-10) to Codeforces-like scale (800-3500)
  * @param difficulty - Kattis difficulty (1.0-10.0)
- * @returns Estimated Codeforces-like difficulty (800-3500)
+ * @returns Mapped Codeforces-like difficulty (800-3500)
  */
 export function mapKattisDifficulty(difficulty: number): number {
-  // Map Kattis 1.0-10.0 scale to Codeforces 800-3500 scale
-  // This is an approximation and can be refined
-  if (difficulty <= 1.5) return 800; // Newbie
-  if (difficulty <= 2.5) return 1200; // Pupil
-  if (difficulty <= 3.5) return 1400; // Specialist
-  if (difficulty <= 4.5) return 1600; // Expert
-  if (difficulty <= 5.5) return 1900; // Candidate Master
-  if (difficulty <= 6.5) return 2100; // Master
-  if (difficulty <= 7.5) return 2300; // International Master
-  if (difficulty <= 8.5) return 2400; // Grandmaster
-  if (difficulty <= 9.5) return 2600; // International Grandmaster
-  return 3000; // Legendary Grandmaster
+  // Kattis rating is 1-10, we want to map it to 800-3500
+  // 1 -> 800
+  // 5 -> 2100
+  // 10 -> 3500
+  return Math.round(800 + ((difficulty - 1) * (3500 - 800)) / 9);
 }
 
 /**
@@ -59,7 +69,7 @@ export function mapKattisDifficulty(difficulty: number): number {
 export async function fetchKattisProblemData(
   problemInfo: { problemId: string; url: string },
   submitterHandle: string = 'anonymous',
-  estimatedDifficulty: number = 5.0,
+  estimatedDifficulty?: number,
   problemTags: string[] = []
 ): Promise<{
   success: boolean;
@@ -68,38 +78,85 @@ export async function fetchKattisProblemData(
 }> {
   try {
     // Check if problem already exists
-    const { data: existingProblems, error: queryError } = await supabase
-      .from('problems')
-      .select('id')
-      .eq('url', problemInfo.url);
+    const { exists, error } = await checkProblemExists(problemInfo.url);
 
-    if (queryError) {
+    if (error) {
       return {
         success: false,
-        message: `Database query error: ${queryError.message}`
+        message: error
       };
     }
 
-    if (existingProblems && existingProblems.length > 0) {
+    if (exists) {
       return {
         success: false,
         message: 'Problem already exists in database'
       };
     }
 
+    // In browser environment, fetch through proxy endpoint and parse HTML
+    if (typeof window !== 'undefined') {
+      try {
+        // Fetch through our proxy endpoint
+        const response = await fetch(`/api/kattis?url=${encodeURIComponent(problemInfo.url)}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to fetch problem');
+        }
+
+        // Parse the HTML
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(data.html, 'text/html');
+
+        const problemName = doc.querySelector('h1')?.textContent?.trim() || problemInfo.problemId;
+
+        // Extract difficulty from the new format
+        const difficultyText = doc
+          .querySelector('.difficulty_number, .difficulty')
+          ?.textContent?.trim();
+        const kattisRating = difficultyText ? parseFloat(difficultyText) : 5; // Default to 5 if not found
+        const difficulty = mapKattisDifficulty(kattisRating);
+
+        // Create problem object without source field
+        const problem = {
+          name: problemName,
+          tags: problemTags,
+          difficulty: difficulty,
+          url: problemInfo.url,
+          solved: 0,
+          dateAdded: new Date().toISOString(),
+          addedBy: submitterHandle,
+          addedByUrl: submitterHandle
+            ? `https://open.kattis.com/users/${submitterHandle}`
+            : 'https://open.kattis.com',
+          likes: 0,
+          dislikes: 0
+        };
+
+        return {
+          success: true,
+          problem
+        };
+      } catch (err) {
+        console.error('Error fetching Kattis problem HTML:', err);
+        // Fall back to the default approach if HTML parsing fails
+      }
+    }
+
+    // Default approach (used in non-browser environments or as fallback)
     // Map Kattis difficulty to Codeforces scale
-    const mappedDifficulty = mapKattisDifficulty(estimatedDifficulty);
+    const mappedDifficulty =
+      estimatedDifficulty !== undefined ? mapKattisDifficulty(estimatedDifficulty) : undefined;
 
     // Format problem name from ID (replace hyphens with spaces and capitalize)
     const formattedName = problemInfo.problemId
       .replace(/-/g, ' ')
       .replace(/\b\w/g, (c) => c.toUpperCase());
 
-    const problem = {
-      id: `kattis_${problemInfo.problemId}`,
+    const problem: Omit<Problem, 'source'> = {
       name: formattedName,
       tags: problemTags,
-      difficulty: mappedDifficulty,
       url: problemInfo.url,
       solved: 0,
       dateAdded: new Date().toISOString(),
@@ -108,6 +165,11 @@ export async function fetchKattisProblemData(
       likes: 0,
       dislikes: 0
     };
+
+    // Add difficulty only if provided
+    if (mappedDifficulty !== undefined) {
+      problem.difficulty = mappedDifficulty;
+    }
 
     return {
       success: true,

@@ -4,6 +4,11 @@
   import { user } from '$lib/services/auth';
   import { isAdmin } from '$lib/services/auth';
   import { supabase } from '$lib/services/database';
+  import {
+    extractCodeforcesProblemInfo,
+    fetchCodeforcesProblemData
+  } from '$lib/services/codeforces';
+  import { insertProblem } from '$lib/services/problem';
   import type { Unsubscriber } from 'svelte/store';
 
   // Form data
@@ -73,53 +78,6 @@
     };
   });
 
-  // Function to extract contest ID and problem index from URL
-  function extractProblemInfo(problemUrl: string) {
-    // First normalize the URL to remove http/https/www and ensure it starts with a domain
-    const normalizedUrl = problemUrl.trim();
-
-    // Handle shorthand "CF" format (e.g., "CF 1794E")
-    const cfShortPattern = /^CF\s*(\d+)([A-Z\d]+)$/i;
-    const cfShortMatch = normalizedUrl.match(cfShortPattern);
-    if (cfShortMatch) {
-      const normalizedFinalUrl = `https://codeforces.com/contest/${cfShortMatch[1]}/problem/${cfShortMatch[2]}`;
-      return {
-        contestId: cfShortMatch[1],
-        index: cfShortMatch[2],
-        problemId: `${cfShortMatch[1]}${cfShortMatch[2]}`,
-        url: normalizedFinalUrl
-      };
-    }
-
-    // Remove http/https/www if present
-    const cleanUrl = normalizedUrl.replace(/^(https?:\/\/)?(www\.)?/, '');
-
-    // Support both codeforces.com and mirror.codeforces.com
-    const contestPattern = /(?:mirror\.)?codeforces\.com\/contest\/(\d+)\/problem\/([A-Z\d]+)/;
-    const problemsetPattern =
-      /(?:mirror\.)?codeforces\.com\/problemset\/problem\/(\d+)\/([A-Z\d]+)/;
-
-    const contestMatch = cleanUrl.match(contestPattern);
-    const problemsetMatch = cleanUrl.match(problemsetPattern);
-
-    // Use whichever pattern matched
-    const match = contestMatch || problemsetMatch;
-
-    if (!match) {
-      return null;
-    }
-
-    // Always normalize to the main codeforces.com URL for consistency
-    const normalizedFinalUrl = `https://codeforces.com/contest/${match[1]}/problem/${match[2]}`;
-
-    return {
-      contestId: match[1],
-      index: match[2],
-      problemId: `${match[1]}${match[2]}`,
-      url: normalizedFinalUrl
-    };
-  }
-
   // Function to extract all valid URLs from the input text
   function extractUrls(text: string): string[] {
     // Split by newlines or spaces to handle both formats
@@ -132,85 +90,13 @@
       if (!line.trim()) continue;
 
       // Try to extract problem info for each line
-      const info = extractProblemInfo(line.trim());
+      const info = extractCodeforcesProblemInfo(line.trim());
       if (info) {
         validUrls.push(info.url);
       }
     }
 
     return validUrls;
-  }
-
-  // Function to fetch problem data from Codeforces API
-  async function fetchProblemData(problemInfo: {
-    contestId: string;
-    index: string;
-    problemId: string;
-    url: string;
-  }) {
-    try {
-      // Check if problem already exists in our database by URL
-      const { data: existingProblems, error: queryError } = await supabase
-        .from('problems')
-        .select('id, url')
-        .or(
-          `url.eq.${problemInfo.url},url.eq.https://codeforces.com/problemset/problem/${problemInfo.contestId}/${problemInfo.index}`
-        );
-
-      if (queryError) {
-        return {
-          success: false,
-          message: `Database query error: ${queryError.message}`,
-          problemInfo
-        };
-      }
-
-      if (existingProblems && existingProblems.length > 0) {
-        return {
-          success: false,
-          message: 'Problem already exists in database',
-          problemInfo
-        };
-      }
-
-      // Fetch problem data from Codeforces API
-      const response = await fetch(
-        `https://codeforces.com/api/contest.standings?contestId=${problemInfo.contestId}&from=1&count=1`
-      );
-      const data = await response.json();
-
-      if (data.status !== 'OK') {
-        throw new Error('Failed to fetch problem data from Codeforces API');
-      }
-
-      // Find the problem in the response
-      const problem = data.result.problems.find((p: any) => p.index === problemInfo.index);
-
-      if (!problem) {
-        throw new Error('Problem not found in Codeforces API response');
-      }
-
-      return {
-        success: true,
-        problem: {
-          name: problem.name,
-          tags: problem.tags || [],
-          difficulty: problem.rating,
-          url: problemInfo.url,
-          added_by: cfHandle || 'tourist',
-          added_by_url: cfHandle
-            ? `https://codeforces.com/profile/${cfHandle}`
-            : 'https://codeforces.com/profile/tourist'
-        }
-      };
-    } catch (err) {
-      console.error('Error fetching problem data:', err);
-      return {
-        success: false,
-        message: err instanceof Error ? err.message : 'Unknown error',
-        problemInfo
-      };
-    }
   }
 
   // Function to process all problem URLs
@@ -253,7 +139,7 @@
       // Process each URL
       for (let i = 0; i < urls.length; i++) {
         const url = urls[i];
-        const problemInfo = extractProblemInfo(url);
+        const problemInfo = extractCodeforcesProblemInfo(url);
 
         if (!problemInfo) {
           processingResults[i] = {
@@ -274,46 +160,35 @@
         processingResults = [...processingResults];
 
         // Fetch problem data
-        const result = await fetchProblemData(problemInfo);
+        const result = await fetchCodeforcesProblemData(problemInfo, cfHandle);
 
-        if (!result.success) {
+        if (!result.success || !result.problem) {
           processingResults[i] = {
             url,
             status: 'error',
-            message: result.message
+            message: result.message || 'Failed to fetch problem data'
           };
           continue;
         }
 
         // Try to insert the problem
         try {
-          const { error: insertError } = await supabase.from('problems').upsert(result.problem, {
-            onConflict: 'url',
-            ignoreDuplicates: true
-          });
+          // Use the insertProblem function from problemDatabase service
+          const insertResult = await insertProblem(result.problem);
 
-          if (insertError) {
-            console.error('Database insert error:', insertError);
-
-            let errorMessage = insertError.message;
-
-            // Simplify error messages for users
-            if (errorMessage.includes('duplicate key value violates unique constraint')) {
-              errorMessage = 'This problem already exists in the database';
-            }
-
+          if (!insertResult.success) {
             processingResults[i] = {
               url,
               status: 'error',
-              message: `Database error: ${errorMessage}`,
-              details: insertError.details || ''
+              message: insertResult.message
             };
           } else {
             processingResults[i] = {
               url,
               status: 'success',
-              name: result.problem?.name,
-              message: 'Added successfully'
+              name: result.problem.name,
+              message: 'Added successfully',
+              details: insertResult.id ? `ID: ${insertResult.id}` : undefined
             };
           }
         } catch (err) {
@@ -383,12 +258,12 @@
           <textarea
             id="problemUrls"
             bind:value={problemUrls}
-            placeholder="https://codeforces.com/contest/1234/problem/A&#10;https://codeforces.com/problemset/problem/1234/A"
+            placeholder="https://codeforces.com/contest/1234/problem/A&#10;https://codeforces.com/problemset/problem/1234/A&#10;https://codeforces.com/gym/102253/problem/C"
             required
             disabled={loading}
             rows="8"
           ></textarea>
-          <small>Enter Codeforces problem URLs</small>
+          <small>Enter Codeforces problem URLs (contest, problemset, or gym)</small>
         </div>
 
         <div class="form-actions">

@@ -67,6 +67,36 @@
   </section>
 
   <section>
+    <h2>On Practicing</h2>
+    <ul>
+      <li>
+        <a href="https://codeforces.com/blog/entry/98806" target="_blank" rel="noopener noreferrer">
+          How to practice Competitive Programming [Um_nik version]
+        </a>
+      </li>
+      <li>
+        <a href="https://codeforces.com/blog/entry/98621" target="_blank" rel="noopener noreferrer">
+          Self-deception: maybe why you're still grey after practicing every day
+        </a>
+      </li>
+      <li>
+        <a href="https://codeforces.com/blog/entry/91114" target="_blank" rel="noopener noreferrer">
+          My opinion on how to practice competitive programming
+        </a>
+      </li>
+      <li>
+        <a
+          href="https://codeforces.com/blog/entry/118882"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          A Highly Experimental Training Plan for Beginners
+        </a>
+      </li>
+    </ul>
+  </section>
+
+  <section>
     <h2>Contribute</h2>
     <p>
       Probhub is an open-source project, and we welcome contributions from the community. If you'd

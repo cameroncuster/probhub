@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS problems (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
   tags TEXT [] NOT NULL DEFAULT '{}',
-  difficulty INTEGER NOT NULL,
+  difficulty INTEGER,
   url TEXT NOT NULL,
   solved INTEGER DEFAULT 0,
   date_added TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
