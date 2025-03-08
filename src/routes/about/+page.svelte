@@ -68,10 +68,6 @@
 
   <section>
     <h2>On Practicing</h2>
-    <p>
-      The competitive programming community has produced excellent resources on how to practice
-      effectively. Here are some insightful blog posts that can help guide your practice:
-    </p>
     <ul>
       <li>
         <a href="https://codeforces.com/blog/entry/98806" target="_blank" rel="noopener noreferrer">
@@ -103,7 +99,7 @@
   <section>
     <h2>Algorithm Libraries</h2>
 
-    <h3>From the team that brought you AlgoHub</h3>
+    <h3>AlgoHub's Library of Choice</h3>
     <ul>
       <li>
         <a
