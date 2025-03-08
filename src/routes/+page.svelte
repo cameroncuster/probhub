@@ -154,14 +154,11 @@
         // Remove the user's feedback
         userFeedback[problemId] = null;
 
-        // Update filtered problems
-        updateFilteredProblems();
+        // Update filtered problems without resorting
+        filteredProblems = filterProblems(problems);
 
         // Save feedback to localStorage
         localStorage.setItem('userFeedback', JSON.stringify(userFeedback));
-
-        // Sort problems after updating
-        problems = sortProblemsByScore(problems);
 
         // Update the database
         await updateProblemFeedback(problemId, isLike, true);
@@ -195,14 +192,11 @@
         // Update user feedback
         userFeedback[problemId] = isLike ? 'like' : 'dislike';
 
-        // Update filtered problems
-        updateFilteredProblems();
+        // Update filtered problems without resorting
+        filteredProblems = filterProblems(problems);
 
         // Save feedback to localStorage
         localStorage.setItem('userFeedback', JSON.stringify(userFeedback));
-
-        // Sort problems after updating
-        problems = sortProblemsByScore(problems);
 
         // Update the database
         await updateProblemFeedback(problemId, isLike, false, currentFeedback);
@@ -225,14 +219,11 @@
       // Update user feedback
       userFeedback[problemId] = isLike ? 'like' : 'dislike';
 
-      // Update filtered problems
-      updateFilteredProblems();
+      // Update filtered problems without resorting
+      filteredProblems = filterProblems(problems);
 
       // Save feedback to localStorage
       localStorage.setItem('userFeedback', JSON.stringify(userFeedback));
-
-      // Sort problems after updating
-      problems = sortProblemsByScore(problems);
 
       // Update the database
       await updateProblemFeedback(problemId, isLike);
@@ -252,11 +243,11 @@
       // Fetch problems
       const fetchedProblems = await fetchProblems();
 
-      // Sort by score
+      // Sort by score only on initial load
       problems = sortProblemsByScore(fetchedProblems);
 
       // Update filtered problems
-      updateFilteredProblems();
+      filteredProblems = filterProblems(problems);
     } catch (e) {
       console.error('Error loading problems:', e);
       error = 'Failed to load problems. Please try again later.';
@@ -274,15 +265,14 @@
   // Function to select source
   function selectSource(source: 'all' | 'codeforces' | 'kattis') {
     selectedSource = source;
-    updateFilteredProblems();
+    // Just filter without resorting
+    filteredProblems = filterProblems(problems);
   }
 
   // Function to update filtered problems
   function updateFilteredProblems() {
-    // First filter the problems
-    const filtered = filterProblems(problems);
-    // Then sort by score (without shuffling)
-    filteredProblems = sortProblemsByScore(filtered);
+    // Just filter without resorting
+    filteredProblems = filterProblems(problems);
   }
 
   // Load problems on mount
