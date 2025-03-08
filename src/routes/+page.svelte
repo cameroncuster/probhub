@@ -39,11 +39,11 @@
   // Function to get the rating tier name
   function getRatingTierName(rating: number | undefined): string {
     if (rating === undefined) return 'Unrated';
-    if (rating >= 2900) return 'Legendary Grandmaster';
+    if (rating >= 3000) return 'Legendary Grandmaster';
     if (rating >= 2600) return 'International Grandmaster';
     if (rating >= 2400) return 'Grandmaster';
     if (rating >= 2300) return 'International Master';
-    if (rating >= 2200) return 'Master';
+    if (rating >= 2100) return 'Master';
     if (rating >= 1900) return 'Candidate Master';
     if (rating >= 1600) return 'Expert';
     if (rating >= 1400) return 'Specialist';
