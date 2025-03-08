@@ -6,11 +6,11 @@
   <div class="container">
     <div class="footer-content">
       <div class="copyright">
-        © {new Date().getFullYear()} ProbHub (17+)
+        © {new Date().getFullYear()} AlgoHub (17+)
       </div>
       <div class="links">
         <a
-          href="https://github.com/cameroncuster/probhub"
+          href="https://github.com/cameroncuster/AlgoHub"
           target="_blank"
           rel="noopener noreferrer"
           aria-label="GitHub Repository"

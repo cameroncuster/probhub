@@ -309,7 +309,7 @@
 </script>
 
 <svelte:head>
-  <title>Probhub</title>
+  <title>AlgoHub</title>
 </svelte:head>
 
 <div class="container">

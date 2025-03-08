@@ -1,8 +1,8 @@
-# ProbHub Vision
+# AlgoHub Vision
 
 ## Core Concept
 
-ProbHub is a social platform for competitive programming problems, designed to connect problem solvers worldwide through shared content and recommendations.
+AlgoHub is a social platform for competitive programming problems, designed to connect problem solvers worldwide through shared content and recommendations.
 
 ## Governance Structure
 

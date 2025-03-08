@@ -50,7 +50,7 @@
 </script>
 
 <svelte:head>
-  <title>Submit Problems - Probhub</title>
+  <title>Submit Problems - AlgoHub</title>
 </svelte:head>
 
 <div class="container">

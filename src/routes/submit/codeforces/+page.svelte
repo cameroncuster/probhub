@@ -227,7 +227,7 @@
 </script>
 
 <svelte:head>
-  <title>Submit Codeforces Problems - Probhub</title>
+  <title>Submit Codeforces Problems - AlgoHub</title>
 </svelte:head>
 
 <div class="container">

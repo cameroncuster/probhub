@@ -1,17 +1,17 @@
 <script lang="ts">
-  // About page for Probhub
+  // About page for AlgoHub
 </script>
 
 <svelte:head>
-  <title>Probhub | About</title>
+  <title>AlgoHub | About</title>
   <meta name="description" content="About this app" />
 </svelte:head>
 
 <div class="container">
   <section>
-    <h2>Probhub</h2>
+    <h2>AlgoHub</h2>
     <p>
-      Probhub is a collection of hand-picked problems. If you are new to competitive programming you
+      AlgoHub is a collection of hand-picked problems. If you are new to competitive programming you
       can learn the fundamentals at some of these sites:
     </p>
     <ul>
@@ -50,7 +50,7 @@
     <p>
       It's a great approach, but the quality of problems on any given archive can vary greatly. If
       only there were a way to extract the highest quality problems available on the internet. We
-      think we can do this! Probhub is a social site that allows users to curate and maintain their
+      think we can do this! AlgoHub is a social site that allows users to curate and maintain their
       own lists of recommendations.
     </p>
 
@@ -61,7 +61,7 @@
       problems.
     </p>
     <p>
-      Probhub aims to collect these Canon Problems to enable you to maximize the effectiveness of
+      AlgoHub aims to collect these Canon Problems to enable you to maximize the effectiveness of
       your practice by leveraging the collective knowledge of the competitive programming community.
     </p>
   </section>
@@ -103,7 +103,7 @@
   <section>
     <h2>Algorithm Libraries</h2>
 
-    <h3>From the team that brought you Probhub</h3>
+    <h3>From the team that brought you AlgoHub</h3>
     <ul>
       <li>
         <a
@@ -251,9 +251,9 @@
   <section>
     <h2>Contribute</h2>
     <p>
-      Probhub is an open-source project, and we welcome contributions from the community. If you'd
-      like to help improve Probhub, please check out our <a
-        href="https://github.com/cameroncuster/probhub"
+      AlgoHub is an open-source project, and we welcome contributions from the community. If you'd
+      like to help improve AlgoHub, please check out our <a
+        href="https://github.com/cameroncuster/AlgoHub"
         target="_blank"
         rel="noopener noreferrer">GitHub repository</a
       >.

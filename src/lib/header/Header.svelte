@@ -51,7 +51,8 @@
   <div class="container">
     <div class="logo">
       <a href="/" aria-label="Home">
-        <span>Probhub</span>
+        <img src="/favicon.png" alt="AlgoHub Logo" class="favicon" />
+        <span>AlgoHub</span>
       </a>
     </div>
 
@@ -108,6 +109,13 @@
     color: var(--heading-color);
     font-weight: 700;
     font-size: 1.25rem;
+    gap: 0.5rem;
+  }
+
+  .favicon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
   }
 
   nav {

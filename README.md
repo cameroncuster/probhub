@@ -1,6 +1,6 @@
-# Probhub - Programming Problems Hub
+# AlgoHub - Programming Problems Hub
 
-Probhub is a modern web application that provides a curated collection of programming problems from various competitive programming platforms. It helps users improve their coding skills, prepare for technical interviews, and master algorithmic thinking.
+AlgoHub is a modern web application that provides a curated collection of programming problems from various competitive programming platforms. It helps users improve their coding skills, prepare for technical interviews, and master algorithmic thinking.
 
 ## Features
 
@@ -28,8 +28,8 @@ Probhub is a modern web application that provides a curated collection of progra
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/cameroncuster/probhub.git
-   cd probhub
+   git clone https://github.com/cameroncuster/AlgoHub.git
+   cd AlgoHub
    ```
 
 2. Install dependencies:

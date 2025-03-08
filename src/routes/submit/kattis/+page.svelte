@@ -175,7 +175,7 @@
 </script>
 
 <svelte:head>
-  <title>Submit Kattis Problems - Probhub</title>
+  <title>Submit Kattis Problems - AlgoHub</title>
 </svelte:head>
 
 <div class="container">
