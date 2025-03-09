@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { fetchProblems, updateProblemFeedback } from '$lib/services/codeforces';
+  import { fetchProblems, updateProblemFeedback } from '$lib/services/problem';
   import type { Problem } from '$lib/services/problem';
 
   import codeforcesLogo from '../assets/codeforces.png';
@@ -10,9 +10,6 @@
   let loading: boolean = false;
   let error: string | null = null;
   let userFeedback: Record<string, 'like' | 'dislike' | null> = {};
-
-  // User preferences
-  let hideTags: boolean = false;
 
   // Filtering options
   let selectedSource: 'all' | 'codeforces' | 'kattis' = 'all';
@@ -60,25 +57,9 @@
     }
   }
 
-  // Function to toggle tag visibility
-  function toggleTagVisibility(): void {
-    hideTags = !hideTags;
-    localStorage.setItem('hideTags', hideTags.toString());
-  }
-
   // Function to determine if a problem is in the first few rows
   function isTopRow(index: number): boolean {
     return index < 3; // Consider first 3 rows as "top rows"
-  }
-
-  // Function to format date to a more readable format
-  function formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
   }
 
   // Function to calculate problem score (likes - dislikes)
@@ -262,19 +243,6 @@
     return problemsToFilter.filter((problem) => problem.source === selectedSource);
   }
 
-  // Function to select source
-  function selectSource(source: 'all' | 'codeforces' | 'kattis') {
-    selectedSource = source;
-    // Just filter without resorting
-    filteredProblems = filterProblems(problems);
-  }
-
-  // Function to update filtered problems
-  function updateFilteredProblems() {
-    // Just filter without resorting
-    filteredProblems = filterProblems(problems);
-  }
-
   // Load problems on mount
   onMount(() => {
     loadProblems();
@@ -288,12 +256,6 @@
         console.error('Failed to parse saved feedback', e);
         userFeedback = {};
       }
-    }
-
-    // Load tag visibility preference from localStorage
-    const savedHideTags = localStorage.getItem('hideTags');
-    if (savedHideTags !== null) {
-      hideTags = savedHideTags === 'true';
     }
 
     // Set hasShuffledProblems to true after initial load
@@ -328,44 +290,6 @@
       <p>No problems found. Check back later or submit some problems!</p>
     </div>
   {:else}
-    <div class="filter-bar">
-      <div class="source-buttons">
-        <button
-          class="source-button {selectedSource === 'all' ? 'active' : ''}"
-          on:click={() => selectSource('all')}
-          title="All Problems"
-        >
-          All Problems
-        </button>
-        <button
-          class="source-button {selectedSource === 'codeforces' ? 'active' : ''}"
-          on:click={() => selectSource('codeforces')}
-          title="Codeforces"
-        >
-          <img src={codeforcesLogo} alt="Codeforces" class="source-icon" />
-          Codeforces
-        </button>
-        <button
-          class="source-button {selectedSource === 'kattis' ? 'active' : ''}"
-          on:click={() => selectSource('kattis')}
-          title="Kattis"
-        >
-          <img src={kattisLogo} alt="Kattis" class="source-icon" />
-          Kattis
-        </button>
-      </div>
-
-      <div class="view-options">
-        <button
-          class="view-option-button {hideTags ? 'active' : ''}"
-          on:click={toggleTagVisibility}
-          title={hideTags ? 'Show tags' : 'Hide tags'}
-        >
-          {hideTags ? 'Show Tags' : 'Hide Tags'}
-        </button>
-      </div>
-    </div>
-
     <div class="table-container">
       <table class="table">
         <thead>
@@ -373,7 +297,6 @@
             <th class="col-source"></th>
             <th class="col-name">Problem</th>
             <th class="col-difficulty">Difficulty</th>
-            <th class="col-tags" class:hidden={hideTags}>Tags</th>
             <th class="col-author">Added By</th>
             <th class="col-feedback"></th>
           </tr>
@@ -408,13 +331,6 @@
                     >{getDifficultyTooltip(problem)}</span
                   >
                 </span>
-              </td>
-              <td class="col-tags" class:hidden={hideTags}>
-                <div class="problem-tags">
-                  {#each problem.tags as tag}
-                    <span class="problem-tag">{tag}</span>
-                  {/each}
-                </div>
               </td>
               <td class="col-author">
                 <a href={problem.addedByUrl} target="_blank" rel="noopener noreferrer">
@@ -503,19 +419,6 @@
     color: #f44336;
   }
 
-  .problem-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.25rem;
-  }
-
-  .problem-tag {
-    font-size: 0.7rem;
-    padding: 0.1rem 0.3rem;
-    background-color: var(--tertiary-color);
-    border-radius: 3px;
-  }
-
   .rating-badge {
     display: inline-block;
     padding: 0.2rem 0.5rem;
@@ -527,6 +430,7 @@
   .feedback-buttons {
     display: flex;
     gap: 0.5rem;
+    justify-content: flex-end;
   }
 
   .like-button,
@@ -660,18 +564,6 @@
       padding: 0.6rem;
     }
 
-    .problem-tags {
-      max-width: 200px;
-      overflow-x: auto;
-      white-space: nowrap;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-    }
-
-    .problem-tags::-webkit-scrollbar {
-      display: none;
-    }
-
     .feedback-buttons {
       white-space: nowrap;
       display: flex;
@@ -710,10 +602,6 @@
     .col-difficulty {
       width: 60px;
       min-width: 60px;
-    }
-
-    .col-tags {
-      min-width: 150px;
     }
 
     .col-author {
@@ -1043,7 +931,7 @@
   }
 
   .col-name {
-    width: 30%;
+    width: 40%;
     min-width: 200px;
   }
 
@@ -1053,19 +941,14 @@
     text-align: center;
   }
 
-  .col-tags {
-    width: 40%;
-    min-width: 250px;
-  }
-
   .col-author {
-    width: 120px;
-    min-width: 120px;
+    width: 20%;
+    min-width: 150px;
   }
 
   .col-feedback {
-    width: 120px;
-    min-width: 120px;
+    width: 15%;
+    min-width: 150px;
     text-align: right;
   }
 
@@ -1078,21 +961,6 @@
 
   .hidden {
     display: none;
-  }
-
-  /* When tags are hidden, adjust other columns */
-  tr:has(.hidden) .col-name {
-    width: 40%;
-  }
-
-  tr:has(.hidden) .col-author {
-    width: 20%;
-    min-width: 150px;
-  }
-
-  tr:has(.hidden) .col-feedback {
-    width: 15%;
-    min-width: 150px;
   }
 
   .table-container {
