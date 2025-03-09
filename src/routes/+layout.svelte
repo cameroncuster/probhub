@@ -1,6 +1,6 @@
 <script lang="ts">
-  import Header from '$lib/header/Header.svelte';
-  import Footer from '$lib/footer/Footer.svelte';
+  import Header from '$lib/components/Header.svelte';
+  import Footer from '$lib/components/Footer.svelte';
   import '../app.css';
   import { onMount } from 'svelte';
   import { initAuth } from '$lib/services/auth';
