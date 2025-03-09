@@ -15,37 +15,31 @@
   let selectedSource: 'all' | 'codeforces' | 'kattis' = 'all';
   let filteredProblems: Problem[] = [];
 
-  // Add a flag to track if we've already shuffled problems
-  let hasShuffledProblems: boolean = false;
+  // Define common tiers
+  const TIERS = [
+    [3000, 'Legendary Grandmaster'],
+    [2600, 'International Grandmaster'],
+    [2400, 'Grandmaster'],
+    [2300, 'International Master'],
+    [2100, 'Master'],
+    [1900, 'Candidate Master'],
+    [1600, 'Expert'],
+    [1400, 'Specialist'],
+    [1200, 'Pupil']
+  ] as const;
 
-  // Function to get the rating color based on difficulty
+  // Get rating color class
   function getRatingColor(rating: number | undefined): string {
-    if (rating === undefined) return 'unrated';
-    if (rating >= 3000) return 'legendary-grandmaster';
-    if (rating >= 2600) return 'international-grandmaster';
-    if (rating >= 2400) return 'grandmaster';
-    if (rating >= 2300) return 'international-master';
-    if (rating >= 2100) return 'master';
-    if (rating >= 1900) return 'candidate-master';
-    if (rating >= 1600) return 'expert';
-    if (rating >= 1400) return 'specialist';
-    if (rating >= 1200) return 'pupil';
-    return 'newbie';
+    if (!rating) return 'unrated';
+    const tier = TIERS.find(([min]) => rating >= min)?.[1];
+    if (!tier) return 'newbie';
+    return tier.toLowerCase().replace(' ', '-');
   }
 
-  // Function to get the rating tier name
+  // Get rating tier display name
   function getRatingTierName(rating: number | undefined): string {
-    if (rating === undefined) return 'Unrated';
-    if (rating >= 3000) return 'Legendary Grandmaster';
-    if (rating >= 2600) return 'International Grandmaster';
-    if (rating >= 2400) return 'Grandmaster';
-    if (rating >= 2300) return 'International Master';
-    if (rating >= 2100) return 'Master';
-    if (rating >= 1900) return 'Candidate Master';
-    if (rating >= 1600) return 'Expert';
-    if (rating >= 1400) return 'Specialist';
-    if (rating >= 1200) return 'Pupil';
-    return 'Newbie';
+    if (!rating) return 'Unrated';
+    return TIERS.find(([min]) => rating >= min)?.[1] || 'Newbie';
   }
 
   // Function to get difficulty tooltip text
@@ -81,27 +75,14 @@
       problemsByScore[score].push(problem);
     });
 
-    // Only shuffle problems within each score group on initial load
-    if (!hasShuffledProblems) {
-      Object.values(problemsByScore).forEach((group) => {
-        // Fisher-Yates shuffle algorithm
-        for (let i = group.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [group[i], group[j]] = [group[j], group[i]];
+    Object.values(problemsByScore).forEach((group) => {
+      group.sort((a, b) => {
+        if (a.id && b.id) {
+          return a.id.localeCompare(b.id);
         }
+        return 0;
       });
-      hasShuffledProblems = true;
-    } else {
-      // For subsequent sorts, sort by ID within each score group for stability
-      Object.values(problemsByScore).forEach((group) => {
-        group.sort((a, b) => {
-          if (a.id && b.id) {
-            return a.id.localeCompare(b.id);
-          }
-          return 0;
-        });
-      });
-    }
+    });
 
     // Get all scores and sort them in descending order
     const scores = Object.keys(problemsByScore)
@@ -257,9 +238,6 @@
         userFeedback = {};
       }
     }
-
-    // Set hasShuffledProblems to true after initial load
-    hasShuffledProblems = true;
   });
 
   // Save user feedback to localStorage when it changes
