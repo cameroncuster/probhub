@@ -1,0 +1,6 @@
+---
+description: database interactions in python
+globs: 
+alwaysApply: false
+---
+use psycopg3

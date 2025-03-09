@@ -19,6 +19,7 @@ export type Problem = {
   likes: number;
   dislikes: number;
   source: 'codeforces' | 'kattis';
+  type?: string;
 };
 
 /**
@@ -81,7 +82,7 @@ export async function insertProblem(problem: Omit<Problem, 'source'>): Promise<{
   try {
     // Map camelCase field names to snake_case column names
     // Omit the id field to let the database generate a UUID
-    const dbProblem: any = {
+    const dbProblem: ProblemRecord = {
       name: problem.name,
       tags: problem.tags,
       url: problem.url,
@@ -90,7 +91,8 @@ export async function insertProblem(problem: Omit<Problem, 'source'>): Promise<{
       added_by: problem.addedBy,
       added_by_url: problem.addedByUrl,
       likes: problem.likes,
-      dislikes: problem.dislikes
+      dislikes: problem.dislikes,
+      type: problem.type
     };
 
     // Add difficulty only if defined
@@ -164,7 +166,8 @@ export async function fetchProblems(): Promise<Problem[]> {
       addedByUrl: record.added_by_url,
       likes: record.likes,
       dislikes: record.dislikes,
-      source: getProblemSource(record.url)
+      source: getProblemSource(record.url),
+      type: record.type
     }));
   } catch (err) {
     console.error('Failed to fetch problems:', err);
@@ -252,7 +255,8 @@ export async function updateProblemFeedback(
       addedByUrl: record.added_by_url,
       likes: record.likes,
       dislikes: record.dislikes,
-      source: getProblemSource(record.url)
+      source: getProblemSource(record.url),
+      type: record.type
     };
   } catch (err) {
     console.error(`Failed to update problem ${problemId}:`, err);
@@ -293,7 +297,8 @@ export async function fetchProblemById(problemId: string): Promise<Problem | und
       addedByUrl: record.added_by_url,
       likes: record.likes,
       dislikes: record.dislikes,
-      source: getProblemSource(record.url)
+      source: getProblemSource(record.url),
+      type: record.type
     };
   } catch (err) {
     console.error(`Failed to fetch problem ${problemId}:`, err);

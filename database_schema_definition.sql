@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS problems (
   tags TEXT [] NOT NULL DEFAULT '{}',
   difficulty INTEGER,
   url TEXT NOT NULL,
+  type TEXT,
   solved INTEGER DEFAULT 0,
   date_added TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   added_by TEXT NOT NULL,
