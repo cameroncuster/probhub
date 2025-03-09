@@ -47,22 +47,6 @@ body {
   color: var(--text-color);
 }
 
-body::before {
-  content: '';
-  width: 80vw;
-  height: 100vh;
-  position: absolute;
-  top: 0;
-  left: 10vw;
-  z-index: -1;
-  background: radial-gradient(
-    50% 50% at 50% 50%,
-    var(--pure-white) 0%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  opacity: 0.05;
-}
-
 #svelte {
   min-height: 100vh;
   display: flex;
