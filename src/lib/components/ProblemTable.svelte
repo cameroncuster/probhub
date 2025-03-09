@@ -57,6 +57,7 @@
         <th class="col-source"></th>
         <th class="col-name">Problem</th>
         <th class="col-difficulty">Difficulty</th>
+        <th class="col-topic">Topic</th>
         <th class="col-author">Added By</th>
         <th class="col-feedback"></th>
       </tr>
@@ -90,6 +91,11 @@
                 >{getDifficultyTooltip(problem)}</span
               >
             </span>
+          </td>
+          <td class="col-topic">
+            {#if problem.type}
+              <span class="topic-badge">{problem.type}</span>
+            {/if}
           </td>
           <td class="col-author">
             <a href={problem.addedByUrl} target="_blank" rel="noopener noreferrer">
@@ -204,8 +210,8 @@
   }
 
   .col-name {
-    width: 40%;
-    min-width: 200px;
+    width: 30%;
+    min-width: 180px;
   }
 
   .col-difficulty {
@@ -214,9 +220,14 @@
     text-align: center;
   }
 
+  .col-topic {
+    width: 15%;
+    min-width: 120px;
+  }
+
   .col-author {
-    width: 20%;
-    min-width: 150px;
+    width: 15%;
+    min-width: 120px;
   }
 
   .col-feedback {
@@ -229,7 +240,21 @@
   .table {
     table-layout: fixed;
     width: 100%;
-    min-width: 800px; /* Minimum total width to prevent squishing */
+    min-width: 900px; /* Increased minimum width to accommodate new column */
+  }
+
+  /* Topic badge styling */
+  .topic-badge {
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    background-color: var(--tertiary-color);
+    font-size: 0.85rem;
+  }
+
+  .topic-badge.empty {
+    color: var(--text-muted-color);
+    background-color: transparent;
   }
 
   .problem-source {
@@ -430,7 +455,12 @@
     }
 
     .col-name {
-      min-width: 150px;
+      min-width: 140px;
+    }
+
+    .col-topic {
+      width: 80px;
+      min-width: 80px;
     }
 
     .col-difficulty {
@@ -439,13 +469,13 @@
     }
 
     .col-author {
-      width: 100px;
-      min-width: 100px;
+      width: 90px;
+      min-width: 90px;
     }
 
     .col-feedback {
-      width: 100px;
-      min-width: 100px;
+      width: 90px;
+      min-width: 90px;
     }
 
     .tooltip .tooltip-text {
