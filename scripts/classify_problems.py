@@ -17,7 +17,7 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 # Configure Gemini API
 genai.configure(api_key=GEMINI_API_KEY)
-model = genai.GenerativeModel("gemini-2.0-flash")
+model = genai.GenerativeModel("gemini-2.0-flash-lite")
 
 # Problem types
 PROBLEM_TYPES = [
@@ -134,9 +134,10 @@ class ProblemFetcher:
 
     @staticmethod
     def fetch_codeforces_problem(problem_info):
-        """Fetch problem data from Codeforces API"""
+        """Fetch problem data from Codeforces API and website"""
         is_gym = "gym" in problem_info["url"]
 
+        # First get basic info from API
         api_url = (
             f"https://codeforces.com/api/contest.standings?contestId={problem_info['contestId']}&from=1&count=1&gym=true"
             if is_gym
@@ -162,19 +163,51 @@ class ProblemFetcher:
 
             if not problem and is_gym:
                 # For gym problems with no API data, create minimal info
-                return {
+                problem = {
                     "name": f"Problem {problem_info['index']} from Gym Contest {problem_info['contestId']}",
                     "tags": ["gym"],
                 }
-
-            if not problem:
+            elif not problem:
                 print(f"Problem not found in API response")
                 return None
+            else:
+                problem = {"name": problem["name"], "tags": problem.get("tags", [])}
 
-            return {"name": problem["name"], "tags": problem.get("tags", [])}
+            # Now fetch the problem statement from the website
+            headers = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+            }
+            response = requests.get(problem_info["url"], headers=headers)
+
+            if response.status_code != 200:
+                print(
+                    f"Failed to fetch Codeforces problem statement: HTTP {response.status_code}"
+                )
+                problem["statement"] = ""
+                return problem
+
+            soup = BeautifulSoup(response.text, "html.parser")
+
+            # Extract problem statement
+            statement_div = soup.select_one(".problem-statement")
+            if statement_div:
+                # Remove input and output sections to focus on the problem description
+                for section in statement_div.select(
+                    ".input-specification, .output-specification, .sample-tests"
+                ):
+                    if section:
+                        section.decompose()
+
+                statement = statement_div.get_text(strip=True, separator=" ")
+                problem["statement"] = statement
+            else:
+                problem["statement"] = ""
+                print(f"Could not find problem statement for {problem_info['url']}")
+
+            return problem
 
         except Exception as e:
-            print(f"Error fetching from Codeforces API: {e}")
+            print(f"Error fetching from Codeforces: {e}")
             return None
 
     @staticmethod
@@ -203,14 +236,19 @@ class ProblemFetcher:
             # Try to extract tags (Kattis doesn't have official tags, so we'll use keywords from the problem statement)
             problem_text = soup.find("div", class_="problembody")
             keywords = []
+            statement = ""
+
             if problem_text:
-                text_content = problem_text.text.lower()
+                # Extract the problem statement
+                statement = problem_text.get_text(strip=True, separator=" ")
+
                 # Look for common algorithm keywords
+                text_content = statement.lower()
                 for keyword in ["array", "string", "tree", "graph", "math", "geometry"]:
                     if keyword in text_content:
                         keywords.append(keyword)
 
-            return {"name": name, "tags": keywords}
+            return {"name": name, "tags": keywords, "statement": statement}
 
         except Exception as e:
             print(f"Error fetching from Kattis: {e}")
@@ -238,14 +276,22 @@ class ProblemFetcher:
         return None
 
 
-def classify_problem(name, tags):
-    """Use Gemini to classify a problem based on its name and tags."""
+def classify_problem(name, tags, statement=""):
+    """Use Gemini to classify a problem based on its name, tags, and statement."""
+    # Truncate statement if it's too long (Gemini has context limits)
+    max_statement_length = 10000
+    if statement and len(statement) > max_statement_length:
+        statement = statement[:max_statement_length] + "..."
+
     prompt = f"""
-    Given the following problem name and tags, classify it into ONE of these types:
+    Given the following competitive programming problem, classify it into ONE of these types:
     {', '.join(PROBLEM_TYPES)}
     
     Problem name: {name}
     Problem tags: {', '.join(tags) if tags else 'None'}
+    
+    Problem statement:
+    {statement if statement else 'Not available'}
     
     IMPORTANT: Choose the FIRST category in the list that applies to this problem.
     For example, if a problem could be both "geometry" and "math", choose "geometry" 
@@ -256,7 +302,7 @@ def classify_problem(name, tags):
 
     try:
         response = model.generate_content(prompt)
-        problem_type = response.text.strip()
+        problem_type = response.text.strip().lower()
 
         # Validate the response is one of our types
         if problem_type not in PROBLEM_TYPES:
@@ -292,7 +338,7 @@ def main():
     parser.add_argument(
         "--delay",
         type=float,
-        default=1.0,
+        default=2.0,
         help="Delay in seconds between API calls",
     )
     args = parser.parse_args()
@@ -329,20 +375,26 @@ def main():
                     for problem_id, name, tags, url in batch:
                         print(f"Processing problem: {name}")
 
-                        # Fetch additional details if requested
-                        if args.fetch_details:
-                            print(
-                                f"  Fetching details from {ProblemFetcher.get_problem_source(url)}..."
-                            )
-                            details = ProblemFetcher.fetch_problem_details(
-                                problem_id, url
-                            )
+                        statement = ""
+                        # Always fetch details to get the problem statement
+                        print(
+                            f"  Fetching details from {ProblemFetcher.get_problem_source(url)}..."
+                        )
+                        details = ProblemFetcher.fetch_problem_details(problem_id, url)
 
-                            # Add a delay to avoid rate limiting
-                            time.sleep(args.delay)
+                        if details and "statement" in details:
+                            statement = details["statement"]
+                            print(
+                                f"  Retrieved problem statement ({len(statement)} characters)"
+                            )
+                        else:
+                            print("  Could not retrieve problem statement")
+
+                        # Add a delay to avoid rate limiting
+                        time.sleep(args.delay)
 
                         # Classify the problem
-                        problem_type = classify_problem(name, tags)
+                        problem_type = classify_problem(name, tags, statement)
                         print(f"  → Classified as: {problem_type}")
 
                         # Update the database
