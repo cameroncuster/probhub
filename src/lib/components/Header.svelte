@@ -1,7 +1,7 @@
 <script lang="ts">
 import { page } from '$app/stores';
 import { user } from '$lib/services/auth';
-import { signInWithGithub, signOut } from '$lib/services/auth';
+import { signInWithGithub, signOut, isAdmin } from '$lib/services/auth';
 import { onMount } from 'svelte';
 
 // Add a loading state to prevent button flash
@@ -13,16 +13,26 @@ let isMounted = false;
 // Mobile menu state
 let mobileMenuOpen = false;
 
+// Track admin status
+let isUserAdmin = false;
+
 onMount(() => {
   // Mark component as mounted
   isMounted = true;
 
   // Set up a subscription to the user store
-  const unsubscribe = user.subscribe((value) => {
+  const unsubscribe = user.subscribe(async (value) => {
     // Only set authLoading to false if we're mounted
     if (isMounted) {
       // Small delay to ensure DOM is ready
       authLoading = false;
+
+      // Check if the user is an admin
+      if (value) {
+        isUserAdmin = await isAdmin(value.id);
+      } else {
+        isUserAdmin = false;
+      }
     }
   });
 
@@ -124,6 +134,19 @@ $: if ($page) {
             >About</a
           >
         </li>
+        {#if $user && isUserAdmin}
+          <li
+            class="relative {$page.url.pathname === '/submit'
+              ? "after:absolute after:-bottom-2 after:left-0 after:h-0.5 after:w-full after:rounded-sm after:bg-[var(--color-accent)] after:content-['']"
+              : ''}"
+          >
+            <a
+              href="/submit"
+              class="block py-2 text-base font-semibold text-[var(--color-heading)] no-underline transition-colors duration-200 hover:text-[var(--color-accent)]"
+              >Submit</a
+            >
+          </li>
+        {/if}
       </ul>
       <div
         class="flex min-w-[70px] items-center justify-end opacity-100 transition-opacity duration-200 {authLoading
@@ -171,6 +194,15 @@ $: if ($page) {
               >About</a
             >
           </li>
+          {#if $user && isUserAdmin}
+            <li>
+              <a
+                href="/submit"
+                class="block py-2 text-base font-semibold text-[var(--color-heading)] no-underline transition-colors duration-200 hover:text-[var(--color-accent)] {$page.url.pathname === '/submit' ? 'text-[var(--color-accent)]' : ''}"
+                >Submit</a
+              >
+            </li>
+          {/if}
         </ul>
         <div
           class="mt-2 flex items-center justify-start {authLoading ? 'invisible opacity-0' : ''}"
