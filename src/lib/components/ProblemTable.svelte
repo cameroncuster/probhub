@@ -47,37 +47,33 @@ function getDifficultyTooltip(problem: Problem): string {
 </script>
 
 <div class="mt-4 overflow-x-auto rounded-lg bg-[var(--color-secondary)] shadow-sm">
-  <table class="w-full min-w-[900px] border-collapse overflow-hidden bg-[var(--color-secondary)]">
+  <table
+    class="w-full min-w-[900px] table-fixed border-collapse overflow-hidden bg-[var(--color-secondary)]"
+  >
     <thead>
       <tr>
-        <th
-          class="sticky top-0 z-10 w-10 min-w-10 bg-[var(--color-tertiary)] p-3 text-center font-bold"
+        <th class="sticky top-0 z-10 w-[5%] bg-[var(--color-tertiary)] p-3 text-center font-bold"
         ></th>
-        <th
-          class="sticky top-0 z-10 w-[30%] min-w-[180px] bg-[var(--color-tertiary)] p-3 text-left font-bold"
+        <th class="sticky top-0 z-10 w-[30%] bg-[var(--color-tertiary)] p-3 text-left font-bold"
           >Problem</th
         >
-        <th
-          class="sticky top-0 z-10 w-20 min-w-20 bg-[var(--color-tertiary)] p-3 text-center font-bold"
+        <th class="sticky top-0 z-10 w-[10%] bg-[var(--color-tertiary)] p-3 text-center font-bold"
           >Difficulty</th
         >
-        <th
-          class="sticky top-0 z-10 w-[15%] min-w-[120px] bg-[var(--color-tertiary)] p-3 text-left font-bold"
+        <th class="sticky top-0 z-10 w-[10%] bg-[var(--color-tertiary)] p-3 text-left font-bold"
           >Topic</th
         >
-        <th
-          class="sticky top-0 z-10 w-[15%] min-w-[120px] bg-[var(--color-tertiary)] p-3 text-left font-bold"
+        <th class="sticky top-0 z-10 w-[20%] bg-[var(--color-tertiary)] p-3 text-left font-bold"
           >Added By</th
         >
-        <th
-          class="sticky top-0 z-10 w-[15%] min-w-[150px] bg-[var(--color-tertiary)] p-3 text-center font-bold"
+        <th class="sticky top-0 z-10 w-[20%] bg-[var(--color-tertiary)] p-3 text-right font-bold"
         ></th>
       </tr>
     </thead>
     <tbody>
-      {#each problems as problem, index}
+      {#each problems as problem}
         <tr class="border-b border-[var(--color-border)] last:border-b-0 hover:bg-black/5">
-          <td class="p-3">
+          <td class="p-3 text-center">
             <span class="flex items-center justify-center">
               <img
                 src={problem.source === 'codeforces' ? codeforcesLogo : kattisLogo}
@@ -86,12 +82,13 @@ function getDifficultyTooltip(problem: Problem): string {
               />
             </span>
           </td>
-          <td class="p-3">
+          <td class="truncate p-3">
             <a
               href={problem.url}
               target="_blank"
               rel="noopener noreferrer"
               class="text-[var(--color-text)] hover:text-[var(--color-accent)] hover:underline"
+              title={problem.name}
             >
               {problem.name}
             </a>
@@ -120,14 +117,17 @@ function getDifficultyTooltip(problem: Problem): string {
               >
                 {problem.type}
               </span>
+            {:else}
+              <span class="text-[var(--color-text-muted)]">-</span>
             {/if}
           </td>
-          <td class="p-3">
+          <td class="truncate p-3">
             <a
               href={problem.addedByUrl}
               target="_blank"
               rel="noopener noreferrer"
               class="text-[var(--color-text)] hover:text-[var(--color-accent)] hover:underline"
+              title={"@" + problem.addedBy}
             >
               @{problem.addedBy}
             </a>
@@ -195,6 +195,12 @@ function getDifficultyTooltip(problem: Problem): string {
                 </button>
               {/if}
             </div>
+          </td>
+        </tr>
+      {:else}
+        <tr>
+          <td colspan="6" class="p-6 text-center text-[var(--color-text-muted)]">
+            No problems found with the selected filter.
           </td>
         </tr>
       {/each}

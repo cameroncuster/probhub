@@ -1,13 +1,22 @@
 <script lang="ts">
 import { onMount } from 'svelte';
+import { browser } from '$app/environment';
 import { fetchProblems, updateProblemFeedback } from '$lib/services/problem';
 import type { Problem } from '$lib/services/problem';
 import ProblemTable from '$lib/components/ProblemTable.svelte';
+import TopicSidebar from '$lib/components/TopicSidebar.svelte';
 
 let problems: Problem[] = [];
+let filteredProblems: Problem[] = [];
 let loading: boolean = false;
 let error: string | null = null;
 let userFeedback: Record<string, 'like' | 'dislike' | null> = {};
+let selectedTopic: string | null = null;
+let sidebarOpen = false; // Default closed on mobile
+let isMobile = false;
+
+// Problem types from classify_problems.py
+const PROBLEM_TYPES = ['geometry', 'string', 'tree', 'math', 'graph', 'queries', 'array', 'misc'];
 
 // Function to calculate problem score (likes - dislikes)
 function calculateScore(problem: Problem): number {
@@ -46,6 +55,37 @@ function sortProblemsByScore(problemsToSort: Problem[]): Problem[] {
   return scores.flatMap((score) => problemsByScore[score]);
 }
 
+// Function to filter problems by topic
+function filterProblemsByTopic(topic: string | null): void {
+  if (!topic) {
+    filteredProblems = [...problems];
+  } else {
+    filteredProblems = problems.filter((problem) => problem.type === topic);
+  }
+
+  // Auto-close sidebar on mobile after selection
+  if (isMobile) {
+    sidebarOpen = false;
+  }
+}
+
+// Function to handle topic selection
+function handleTopicSelect(topic: string | null): void {
+  selectedTopic = topic;
+  filterProblemsByTopic(topic);
+}
+
+// Function to toggle sidebar visibility
+function toggleSidebar(): void {
+  sidebarOpen = !sidebarOpen;
+}
+
+// Check if mobile
+function checkMobile(): void {
+  if (!browser) return;
+  isMobile = window.innerWidth < 768;
+}
+
 // Function to handle like/dislike actions
 async function handleLike(problemId: string, isLike: boolean): Promise<void> {
   try {
@@ -77,6 +117,9 @@ async function handleLike(problemId: string, isLike: boolean): Promise<void> {
 
       // Update the database
       await updateProblemFeedback(problemId, isLike, true);
+
+      // Update filtered problems
+      filterProblemsByTopic(selectedTopic);
       return;
     }
 
@@ -115,6 +158,9 @@ async function handleLike(problemId: string, isLike: boolean): Promise<void> {
 
       // Update the database
       await updateProblemFeedback(problemId, isLike, false, currentFeedback);
+
+      // Update filtered problems
+      filterProblemsByTopic(selectedTopic);
       return;
     }
 
@@ -142,6 +188,9 @@ async function handleLike(problemId: string, isLike: boolean): Promise<void> {
 
     // Update the database
     await updateProblemFeedback(problemId, isLike);
+
+    // Update filtered problems
+    filterProblemsByTopic(selectedTopic);
   } catch (err) {
     console.error('Error updating feedback:', err);
     // If there's an error, reload problems to ensure UI is in sync with server
@@ -160,6 +209,9 @@ async function loadProblems() {
 
     // Sort by score only on initial load
     problems = sortProblemsByScore(fetchedProblems);
+
+    // Initialize filtered problems
+    filteredProblems = [...problems];
   } catch (e) {
     console.error('Error loading problems:', e);
     error = 'Failed to load problems. Please try again later.';
@@ -182,11 +234,25 @@ onMount(() => {
       userFeedback = {};
     }
   }
+
+  // Check if mobile
+  checkMobile();
+
+  // Add event listeners
+  if (browser) {
+    window.addEventListener('resize', checkMobile);
+  }
+
+  return () => {
+    if (browser) {
+      window.removeEventListener('resize', checkMobile);
+    }
+  };
 });
 
 // Save user feedback to localStorage when it changes
 $: {
-  if (Object.keys(userFeedback).length > 0) {
+  if (Object.keys(userFeedback).length > 0 && browser) {
     localStorage.setItem('userFeedback', JSON.stringify(userFeedback));
   }
 }
@@ -197,7 +263,7 @@ $: {
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 </svelte:head>
 
-<div class="mx-auto w-full max-w-[1200px] px-3 py-4 sm:px-4 md:py-6">
+<div class="mx-auto w-full max-w-[1200px]">
   {#if loading}
     <div class="py-6 text-center sm:py-8">
       <div
@@ -218,6 +284,29 @@ $: {
       <p>No problems found. Check back later or submit some problems!</p>
     </div>
   {:else}
-    <ProblemTable problems={problems} userFeedback={userFeedback} onLike={handleLike} />
+    <div class="flex min-h-[calc(100vh-2rem)]">
+      <!-- Topic Sidebar Component -->
+      <TopicSidebar
+        topics={PROBLEM_TYPES}
+        selectedTopic={selectedTopic}
+        onSelectTopic={handleTopicSelect}
+        isMobile={isMobile}
+        isOpen={sidebarOpen}
+        onToggle={toggleSidebar}
+      />
+
+      <!-- Main content -->
+      <div class="flex-grow px-3 py-4 sm:px-4 md:py-6">
+        <ProblemTable problems={filteredProblems} userFeedback={userFeedback} onLike={handleLike} />
+      </div>
+    </div>
   {/if}
 </div>
+
+<style>
+@media (max-width: 767px) {
+  :global(body) {
+    overflow-x: hidden;
+  }
+}
+</style>
