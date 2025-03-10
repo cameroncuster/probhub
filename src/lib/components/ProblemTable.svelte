@@ -135,62 +135,66 @@ function getDifficultyTooltip(problem: Problem): string {
           </td>
           <td class="p-3 text-right">
             <div class="flex justify-end gap-2">
-              <button
-                class="flex cursor-pointer items-center gap-1 rounded border border-[var(--color-border)] bg-transparent px-2 py-1 text-[var(--color-text)] transition-all duration-200 hover:border-[color-mix(in_oklab,rgb(34_197_94)_50%,transparent)] hover:bg-[color-mix(in_oklab,rgb(34_197_94)_10%,transparent)] hover:text-[rgb(34_197_94)] {problem.id &&
-                userFeedback[problem.id] === 'like'
-                  ? 'border-[color-mix(in_oklab,rgb(34_197_94)_50%,transparent)] bg-[color-mix(in_oklab,rgb(34_197_94)_10%,transparent)] text-[rgb(34_197_94)]'
-                  : ''}"
-                on:click={() => problem.id && onLike(problem.id, true)}
-                title={problem.id && userFeedback[problem.id] === 'like'
-                  ? 'Undo like'
-                  : 'Like this problem'}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="stroke-2"
+              {#if problem.id}
+                {@const hasLiked = userFeedback[problem.id] === 'like'}
+                {@const hasDisliked = userFeedback[problem.id] === 'dislike'}
+
+                <button
+                  class={`flex cursor-pointer items-center gap-1 rounded border px-2 py-1 transition-all duration-200
+                    ${hasLiked 
+                      ? 'border-[color-mix(in_oklab,rgb(34_197_94)_50%,transparent)] bg-[color-mix(in_oklab,rgb(34_197_94)_10%,transparent)] text-[rgb(34_197_94)]' 
+                      : 'border-[var(--color-border)] bg-transparent text-[var(--color-text)] hover:border-[color-mix(in_oklab,rgb(34_197_94)_50%,transparent)] hover:bg-[color-mix(in_oklab,rgb(34_197_94)_10%,transparent)] hover:text-[rgb(34_197_94)]'
+                    }`}
+                  on:click={() => onLike(problem.id!, true)}
+                  title={hasLiked ? 'Undo like' : 'Like this problem'}
                 >
-                  <path
-                    d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"
-                  ></path>
-                </svg>
-                <span>{problem.likes}</span>
-              </button>
-              <button
-                class="flex cursor-pointer items-center gap-1 rounded border border-[var(--color-border)] bg-transparent px-2 py-1 text-[var(--color-text)] transition-all duration-200 hover:border-[color-mix(in_oklab,rgb(239_68_68)_50%,transparent)] hover:bg-[color-mix(in_oklab,rgb(239_68_68)_10%,transparent)] hover:text-[rgb(239_68_68)] {problem.id &&
-                userFeedback[problem.id] === 'dislike'
-                  ? 'border-[color-mix(in_oklab,rgb(239_68_68)_50%,transparent)] bg-[color-mix(in_oklab,rgb(239_68_68)_10%,transparent)] text-[rgb(239_68_68)]'
-                  : ''}"
-                on:click={() => problem.id && onLike(problem.id, false)}
-                title={problem.id && userFeedback[problem.id] === 'dislike'
-                  ? 'Undo dislike'
-                  : 'Dislike this problem'}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="stroke-2"
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="stroke-2"
+                  >
+                    <path
+                      d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"
+                    ></path>
+                  </svg>
+                  <span>{problem.likes}</span>
+                </button>
+
+                <button
+                  class={`flex cursor-pointer items-center gap-1 rounded border px-2 py-1 transition-all duration-200
+                    ${hasDisliked 
+                      ? 'border-[color-mix(in_oklab,rgb(239_68_68)_50%,transparent)] bg-[color-mix(in_oklab,rgb(239_68_68)_10%,transparent)] text-[rgb(239_68_68)]' 
+                      : 'border-[var(--color-border)] bg-transparent text-[var(--color-text)] hover:border-[color-mix(in_oklab,rgb(239_68_68)_50%,transparent)] hover:bg-[color-mix(in_oklab,rgb(239_68_68)_10%,transparent)] hover:text-[rgb(239_68_68)]'
+                    }`}
+                  on:click={() => onLike(problem.id!, false)}
+                  title={hasDisliked ? 'Undo dislike' : 'Dislike this problem'}
                 >
-                  <path
-                    d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"
-                  ></path>
-                </svg>
-                <span>{problem.dislikes}</span>
-              </button>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="stroke-2"
+                  >
+                    <path
+                      d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"
+                    ></path>
+                  </svg>
+                  <span>{problem.dislikes}</span>
+                </button>
+              {/if}
             </div>
           </td>
         </tr>
