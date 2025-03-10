@@ -24,10 +24,10 @@
   });
 </script>
 
-<div class="app">
+<div class="flex flex-col min-h-screen">
   <Header />
 
-  <main>
+  <main class="flex-1 flex flex-col w-full mx-auto box-border overflow-x-hidden">
     <slot />
   </main>
 
@@ -35,22 +35,7 @@
 </div>
 
 <style>
-  .app {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-  }
-
-  main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    margin: 0 auto;
-    box-sizing: border-box;
-    overflow-x: hidden; /* Prevent horizontal scrolling */
-  }
-
+  /* Global styles that can't be handled with Tailwind directly */
   :global(body) {
     overflow-x: hidden;
     max-width: 100vw;
