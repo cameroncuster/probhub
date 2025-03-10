@@ -51,7 +51,7 @@ function getDifficultyTooltip(problem: Problem): string {
     <thead>
       <tr>
         <th
-          class="sticky top-0 z-10 w-10 min-w-10 bg-[var(--color-tertiary)] p-3 text-left font-bold"
+          class="sticky top-0 z-10 w-10 min-w-10 bg-[var(--color-tertiary)] p-3 text-center font-bold"
         ></th>
         <th
           class="sticky top-0 z-10 w-[30%] min-w-[180px] bg-[var(--color-tertiary)] p-3 text-left font-bold"
@@ -71,8 +71,7 @@ function getDifficultyTooltip(problem: Problem): string {
         >
         <th
           class="sticky top-0 z-10 w-[15%] min-w-[150px] bg-[var(--color-tertiary)] p-3 text-center font-bold"
-          >Feedback</th
-        >
+        ></th>
       </tr>
     </thead>
     <tbody>

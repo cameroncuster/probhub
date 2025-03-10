@@ -23,6 +23,8 @@
     --color-background: oklch(0.19 0 0 / 0.7);
     --color-border: oklch(0.44 0 0);
     --color-link: oklch(0.65 0.26 296.88);
+    --color-link-subtle: oklch(0.8 0.1 296.88);
+    --color-link-nav: oklch(1 0 0 / 0.8);
 
     /* Codeforces rating colors */
     --color-legendary-grandmaster: oklch(0.65 0.27 29.23);
@@ -108,14 +110,55 @@ button {
 }
 
 a {
-  color: var(--color-link);
+  color: var(--color-text);
   text-decoration: none;
+  transition: color 0.2s ease;
 }
 
 a:hover {
+  color: var(--color-heading);
   text-decoration: underline;
 }
 
+/* Primary/accent links - use for important actions or main navigation */
+a.link-accent,
+.content a,
+nav.main-nav a {
+  color: var(--color-accent);
+}
+
+a.link-accent:hover,
+.content a:hover,
+nav.main-nav a:hover {
+  color: color-mix(in oklab, var(--color-accent) 80%, white);
+}
+
+/* Table links - more subtle styling for dense information displays */
+.table a,
+table a {
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+/* Exception for user links in tables */
+.table a.user-link,
+table a.user-link,
+table td:nth-child(5) a {
+  color: var(--color-accent);
+}
+
+.table a.user-link:hover,
+table a.user-link:hover,
+table td:nth-child(5) a:hover {
+  color: color-mix(in oklab, var(--color-accent) 80%, white);
+}
+
+.table a:hover,
+table a:hover {
+  color: var(--color-heading);
+}
+
+/* Keep header home link behavior */
 header a[aria-label='Home']:hover {
   text-decoration: none;
 }
