@@ -71,8 +71,8 @@ $: if ($page) {
 }
 </script>
 
-<header class="sticky top-0 z-50 bg-[var(--color-secondary)] py-3 shadow-sm">
-  <div class="mx-auto flex max-w-7xl items-center justify-between px-3 sm:px-4 md:px-6">
+<header class="sticky top-0 z-50 w-full bg-[var(--color-secondary)] py-3 shadow-sm">
+  <div class="mx-auto flex max-w-[1200px] items-center justify-between px-3 sm:px-4 md:px-6">
     <div class="flex items-center">
       <a
         href="/"
@@ -244,5 +244,11 @@ $: if ($page) {
 
 div.md\:hidden {
   animation: slideDown 0.2s ease-out;
+}
+
+/* Ensure header is at the top */
+header {
+  left: 0;
+  right: 0;
 }
 </style>

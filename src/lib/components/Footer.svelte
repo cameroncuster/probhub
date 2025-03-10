@@ -1,13 +1,13 @@
 <script>
-  // Footer component
+// Footer component
 </script>
 
 <footer
-  class="bg-[var(--color-secondary)] py-6 mt-auto border-t border-[color-mix(in_oklab,black_10%,transparent)]"
+  class="mt-auto w-full border-t border-[color-mix(in_oklab,black_10%,transparent)] bg-[var(--color-secondary)] py-6"
 >
-  <div class="max-w-7xl mx-auto px-6 md:px-4 sm:px-3">
-    <div class="flex justify-between items-center">
-      <div class="text-[var(--color-text)] text-sm">
+  <div class="mx-auto max-w-[1200px] px-3 sm:px-4 md:px-6">
+    <div class="flex items-center justify-between">
+      <div class="text-sm text-[var(--color-text)]">
         © {new Date().getFullYear()} AlgoHub
       </div>
       <div class="flex gap-6">
@@ -16,7 +16,7 @@
           target="_blank"
           rel="noopener noreferrer"
           aria-label="GitHub Repository"
-          class="flex items-center gap-2 text-[var(--color-text)] no-underline text-sm transition-colors duration-200 hover:text-[var(--color-accent)]"
+          class="flex items-center gap-2 text-sm text-[var(--color-text)] no-underline transition-colors duration-200 hover:text-[var(--color-accent)]"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -39,3 +39,11 @@
     </div>
   </div>
 </footer>
+
+<style>
+/* Ensure footer is at the bottom */
+footer {
+  left: 0;
+  right: 0;
+}
+</style>

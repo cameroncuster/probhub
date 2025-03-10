@@ -228,3 +228,59 @@ img {
     font-size: 3rem;
   }
 }
+
+/* Layout utilities for problem table and sidebar */
+@media (min-width: 768px) {
+  /* Desktop layout */
+  .problem-table-container {
+    margin: 0 auto;
+    width: 100%;
+  }
+}
+
+@media (max-width: 767px) {
+  /* Mobile layout */
+  .sidebar {
+    position: fixed;
+    z-index: 40;
+  }
+}
+
+/* Consistent container width */
+.max-w-\[1200px\] {
+  max-width: 1200px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0;
+}
+
+/* Ensure table is properly centered */
+.problem-table-container {
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Prevent sidebar and table overlap */
+@media (min-width: 768px) {
+  .md\:ml-32 {
+    margin-left: 8rem;
+  }
+
+  .md\:mr-32 {
+    margin-right: 8rem;
+  }
+}
+
+/* Ensure proper table scrolling behavior */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Table layout */
+.table {
+  width: 100%;
+  margin: 0 auto;
+}
