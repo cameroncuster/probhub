@@ -4,17 +4,17 @@
   import '../app.css';
   import { onMount } from 'svelte';
   import { initAuth } from '$lib/services/auth';
-
+  
   let authSubscription: { subscription: { unsubscribe: () => void } } | null = null;
-
+  
   onMount(() => {
     // Initialize authentication
     const initializeAuth = async () => {
       authSubscription = await initAuth();
     };
-
+  
     initializeAuth();
-
+  
     // Clean up on component unmount
     return () => {
       if (authSubscription?.subscription) {
