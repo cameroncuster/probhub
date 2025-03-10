@@ -1,81 +1,76 @@
 <script lang="ts">
-  import type { Problem } from '$lib/services/problem';
-  // Use static image paths instead of imports
-  const codeforcesLogo = '/images/codeforces.png';
-  const kattisLogo = '/images/kattis.png';
+import type { Problem } from '$lib/services/problem';
+// Use static image paths instead of imports
+const codeforcesLogo = '/images/codeforces.png';
+const kattisLogo = '/images/kattis.png';
 
-  // Props
-  export let problems: Problem[] = [];
-  export let userFeedback: Record<string, 'like' | 'dislike' | null> = {};
-  export let onLike: (problemId: string, isLike: boolean) => Promise<void>;
+// Props
+export let problems: Problem[] = [];
+export let userFeedback: Record<string, 'like' | 'dislike' | null> = {};
+export let onLike: (problemId: string, isLike: boolean) => Promise<void>;
 
-  // Define common tiers
-  const TIERS = [
-    [3000, 'Legendary Grandmaster'],
-    [2600, 'International Grandmaster'],
-    [2400, 'Grandmaster'],
-    [2300, 'International Master'],
-    [2100, 'Master'],
-    [1900, 'Candidate Master'],
-    [1600, 'Expert'],
-    [1400, 'Specialist'],
-    [1200, 'Pupil']
-  ] as const;
+// Define common tiers
+const TIERS = [
+  [3000, 'Legendary Grandmaster'],
+  [2600, 'International Grandmaster'],
+  [2400, 'Grandmaster'],
+  [2300, 'International Master'],
+  [2100, 'Master'],
+  [1900, 'Candidate Master'],
+  [1600, 'Expert'],
+  [1400, 'Specialist'],
+  [1200, 'Pupil']
+] as const;
 
-  // Get rating color class
-  function getRatingColor(rating: number | undefined): string {
-    if (!rating) return 'unrated';
-    const tier = TIERS.find(([min]) => rating >= min)?.[1];
-    if (!tier) return 'newbie';
-    return tier.toLowerCase().replace(' ', '-');
+// Get rating color class
+function getRatingColor(rating: number | undefined): string {
+  if (!rating) return 'unrated';
+  const tier = TIERS.find(([min]) => rating >= min)?.[1];
+  if (!tier) return 'newbie';
+  return tier.toLowerCase().replace(' ', '-');
+}
+
+// Get rating tier display name
+function getRatingTierName(rating: number | undefined): string {
+  if (!rating) return 'Unrated';
+  return TIERS.find(([min]) => rating >= min)?.[1] || 'Newbie';
+}
+
+// Function to get difficulty tooltip text
+function getDifficultyTooltip(problem: Problem): string {
+  if (problem.source === 'kattis') {
+    return `Kattis difficulty mapped from 1-10 scale to 800-3500 rating range`;
+  } else {
+    return `${getRatingTierName(problem.difficulty)}`;
   }
-
-  // Get rating tier display name
-  function getRatingTierName(rating: number | undefined): string {
-    if (!rating) return 'Unrated';
-    return TIERS.find(([min]) => rating >= min)?.[1] || 'Newbie';
-  }
-
-  // Function to get difficulty tooltip text
-  function getDifficultyTooltip(problem: Problem): string {
-    if (problem.source === 'kattis') {
-      return `Kattis difficulty mapped from 1-10 scale to 800-3500 rating range`;
-    } else {
-      return `${getRatingTierName(problem.difficulty)}`;
-    }
-  }
-
-  // Function to determine if a problem is in the first few rows
-  function isTopRow(index: number): boolean {
-    return index < 3; // Consider first 3 rows as "top rows"
-  }
+}
 </script>
 
-<div class="overflow-x-auto rounded-lg shadow-sm mt-4 bg-[var(--color-secondary)]">
-  <table class="w-full border-collapse bg-[var(--color-secondary)] overflow-hidden min-w-[900px]">
+<div class="mt-4 overflow-x-auto rounded-lg bg-[var(--color-secondary)] shadow-sm">
+  <table class="w-full min-w-[900px] border-collapse overflow-hidden bg-[var(--color-secondary)]">
     <thead>
       <tr>
         <th
-          class="p-3 text-left bg-[var(--color-tertiary)] sticky top-0 z-10 font-bold w-10 min-w-10"
+          class="sticky top-0 z-10 w-10 min-w-10 bg-[var(--color-tertiary)] p-3 text-left font-bold"
         ></th>
         <th
-          class="p-3 text-left bg-[var(--color-tertiary)] sticky top-0 z-10 font-bold w-[30%] min-w-[180px]"
+          class="sticky top-0 z-10 w-[30%] min-w-[180px] bg-[var(--color-tertiary)] p-3 text-left font-bold"
           >Problem</th
         >
         <th
-          class="p-3 text-center bg-[var(--color-tertiary)] sticky top-0 z-10 font-bold w-20 min-w-20"
+          class="sticky top-0 z-10 w-20 min-w-20 bg-[var(--color-tertiary)] p-3 text-center font-bold"
           >Difficulty</th
         >
         <th
-          class="p-3 text-left bg-[var(--color-tertiary)] sticky top-0 z-10 font-bold w-[15%] min-w-[120px]"
+          class="sticky top-0 z-10 w-[15%] min-w-[120px] bg-[var(--color-tertiary)] p-3 text-left font-bold"
           >Topic</th
         >
         <th
-          class="p-3 text-left bg-[var(--color-tertiary)] sticky top-0 z-10 font-bold w-[15%] min-w-[120px]"
+          class="sticky top-0 z-10 w-[15%] min-w-[120px] bg-[var(--color-tertiary)] p-3 text-left font-bold"
           >Added By</th
         >
         <th
-          class="p-3 text-center bg-[var(--color-tertiary)] sticky top-0 z-10 font-bold w-[15%] min-w-[150px]"
+          class="sticky top-0 z-10 w-[15%] min-w-[150px] bg-[var(--color-tertiary)] p-3 text-center font-bold"
           >Feedback</th
         >
       </tr>
@@ -88,7 +83,7 @@
               <img
                 src={problem.source === 'codeforces' ? codeforcesLogo : kattisLogo}
                 alt={problem.source}
-                class="w-6 h-6 object-contain"
+                class="h-6 w-6 object-contain"
               />
             </span>
           </td>
@@ -104,17 +99,16 @@
           </td>
           <td class="p-3 text-center">
             <span
-              class="inline-block px-2 py-1 rounded text-white font-bold relative {isTopRow(index)
-                ? 'group'
-                : ''} {problem.source === 'codeforces' ? 'cursor-default' : 'cursor-help'}"
+              class="group relative inline-block rounded px-2 py-1 font-bold
+                text-white
+                 {problem.source === 'codeforces' ? 'cursor-default' : 'cursor-help'}"
               style="background-color: var(--color-{getRatingColor(problem.difficulty)})"
             >
               {problem.difficulty}
               <span
-                class="invisible group-hover:visible absolute bottom-full left-1/2 transform -translate-x-1/2 bg-[var(--color-secondary)] text-[var(--color-text)] text-left rounded-md p-2.5 z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-md border border-[var(--color-border)] font-normal text-xs whitespace-pre-line leading-relaxed w-[280px] {problem.source ===
-                'codeforces'
-                  ? 'w-auto min-w-0 max-w-fit p-1.5 px-2.5 text-center whitespace-nowrap'
-                  : ''} {!isTopRow(index) ? 'bottom-auto top-full' : ''}"
+                class="invisible absolute bottom-full left-1/2 z-50 -translate-x-1/2 transform rounded-md border border-[var(--color-border)] bg-[var(--color-secondary)] text-left text-xs leading-relaxed font-normal whitespace-pre-line text-[var(--color-text)] opacity-0 shadow-md transition-opacity duration-300 group-hover:visible group-hover:opacity-100 {problem.source === 'codeforces'
+                  ? 'w-auto max-w-fit min-w-0 p-1.5 px-3 text-center whitespace-nowrap'
+                  : 'w-[280px] p-2.5'} mb-1"
               >
                 {getDifficultyTooltip(problem)}
               </span>
@@ -123,7 +117,7 @@
           <td class="p-3">
             {#if problem.type}
               <span
-                class="inline-block px-2 py-1 rounded text-[var(--color-text)] bg-[var(--color-tertiary)] text-sm"
+                class="inline-block rounded bg-[var(--color-tertiary)] px-2 py-1 text-sm text-[var(--color-text)]"
               >
                 {problem.type}
               </span>
@@ -140,11 +134,11 @@
             </a>
           </td>
           <td class="p-3 text-right">
-            <div class="flex gap-2 justify-end">
+            <div class="flex justify-end gap-2">
               <button
-                class="flex items-center gap-1 bg-transparent border border-[var(--color-border)] rounded px-2 py-1 cursor-pointer transition-all duration-200 text-[var(--color-text)] hover:bg-[color-mix(in_oklab,rgb(34_197_94)_10%,transparent)] hover:border-[color-mix(in_oklab,rgb(34_197_94)_50%,transparent)] hover:text-[rgb(34_197_94)] {problem.id &&
+                class="flex cursor-pointer items-center gap-1 rounded border border-[var(--color-border)] bg-transparent px-2 py-1 text-[var(--color-text)] transition-all duration-200 hover:border-[color-mix(in_oklab,rgb(34_197_94)_50%,transparent)] hover:bg-[color-mix(in_oklab,rgb(34_197_94)_10%,transparent)] hover:text-[rgb(34_197_94)] {problem.id &&
                 userFeedback[problem.id] === 'like'
-                  ? 'bg-[color-mix(in_oklab,rgb(34_197_94)_10%,transparent)] border-[color-mix(in_oklab,rgb(34_197_94)_50%,transparent)] text-[rgb(34_197_94)]'
+                  ? 'border-[color-mix(in_oklab,rgb(34_197_94)_50%,transparent)] bg-[color-mix(in_oklab,rgb(34_197_94)_10%,transparent)] text-[rgb(34_197_94)]'
                   : ''}"
                 on:click={() => problem.id && onLike(problem.id, true)}
                 title={problem.id && userFeedback[problem.id] === 'like'
@@ -170,9 +164,9 @@
                 <span>{problem.likes}</span>
               </button>
               <button
-                class="flex items-center gap-1 bg-transparent border border-[var(--color-border)] rounded px-2 py-1 cursor-pointer transition-all duration-200 text-[var(--color-text)] hover:bg-[color-mix(in_oklab,rgb(239_68_68)_10%,transparent)] hover:border-[color-mix(in_oklab,rgb(239_68_68)_50%,transparent)] hover:text-[rgb(239_68_68)] {problem.id &&
+                class="flex cursor-pointer items-center gap-1 rounded border border-[var(--color-border)] bg-transparent px-2 py-1 text-[var(--color-text)] transition-all duration-200 hover:border-[color-mix(in_oklab,rgb(239_68_68)_50%,transparent)] hover:bg-[color-mix(in_oklab,rgb(239_68_68)_10%,transparent)] hover:text-[rgb(239_68_68)] {problem.id &&
                 userFeedback[problem.id] === 'dislike'
-                  ? 'bg-[color-mix(in_oklab,rgb(239_68_68)_10%,transparent)] border-[color-mix(in_oklab,rgb(239_68_68)_50%,transparent)] text-[rgb(239_68_68)]'
+                  ? 'border-[color-mix(in_oklab,rgb(239_68_68)_50%,transparent)] bg-[color-mix(in_oklab,rgb(239_68_68)_10%,transparent)] text-[rgb(239_68_68)]'
                   : ''}"
                 on:click={() => problem.id && onLike(problem.id, false)}
                 title={problem.id && userFeedback[problem.id] === 'dislike'
