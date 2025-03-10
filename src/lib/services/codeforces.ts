@@ -211,3 +211,32 @@ export async function fetchCodeforcesProblemData(
     };
   }
 }
+
+export function formatCodeforcesUrl(url: string, name?: string): string {
+  const shortUrl = url.replace(
+    /^https?:\/\/(?:www\.)?codeforces\.com\/(?:contest|problemset\/problem)\/(\d+)\/(?:problem\/)?([A-Z\d]+).*$/,
+    'CF $1$2'
+  );
+
+  return name ? `${shortUrl} - ${name}` : shortUrl;
+}
+
+export function extractCodeforcesUrls(text: string): string[] {
+  // Split by newlines or spaces to handle both formats
+  const lines = text.split(/[\n\s]+/).filter((line) => line.trim());
+
+  const validUrls: string[] = [];
+
+  for (const line of lines) {
+    // Skip empty lines
+    if (!line.trim()) continue;
+
+    // Try to extract problem info for each line
+    const info = extractCodeforcesProblemInfo(line.trim());
+    if (info) {
+      validUrls.push(info.url);
+    }
+  }
+
+  return validUrls;
+}

@@ -183,3 +183,33 @@ export async function fetchKattisProblemData(
     };
   }
 }
+
+export function formatKattisUrl(url: string, name?: string): string {
+  if (name) return name;
+
+  // Extract problem ID from URL
+  return url.replace(
+    /^https?:\/\/(?:www\.)?(?:open\.)?kattis\.com\/problems\/([a-z0-9]+).*$/,
+    '$1'
+  );
+}
+
+export function extractKattisUrls(text: string): string[] {
+  // Split by newlines or spaces to handle both formats
+  const lines = text.split(/[\n\s]+/).filter((line) => line.trim());
+
+  const validUrls: string[] = [];
+
+  for (const line of lines) {
+    // Skip empty lines
+    if (!line.trim()) continue;
+
+    // Try to extract problem info for each line
+    const info = extractKattisProblemInfo(line.trim());
+    if (info) {
+      validUrls.push(info.url);
+    }
+  }
+
+  return validUrls;
+}
