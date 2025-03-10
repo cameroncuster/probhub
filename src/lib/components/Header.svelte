@@ -1,105 +1,145 @@
 <script lang="ts">
-  import { page } from '$app/stores';
-  import { user } from '$lib/services/auth';
-  import { signInWithGithub, signOut } from '$lib/services/auth';
-  import { onMount } from 'svelte';
+import { page } from '$app/stores';
+import { user } from '$lib/services/auth';
+import { signInWithGithub, signOut } from '$lib/services/auth';
+import { onMount } from 'svelte';
 
-  // Add a loading state to prevent button flash
-  let authLoading = true;
+// Add a loading state to prevent button flash
+let authLoading = true;
 
-  // Use a flag to ensure we've fully mounted before showing anything
-  let isMounted = false;
+// Use a flag to ensure we've fully mounted before showing anything
+let isMounted = false;
 
-  onMount(() => {
-    // Mark component as mounted
-    isMounted = true;
+// Mobile menu state
+let mobileMenuOpen = false;
 
-    // Set up a subscription to the user store
-    const unsubscribe = user.subscribe((value) => {
-      // Only set authLoading to false if we're mounted
-      if (isMounted) {
-        // Small delay to ensure DOM is ready
-        authLoading = false;
-      }
-    });
+onMount(() => {
+  // Mark component as mounted
+  isMounted = true;
 
-    // Clean up subscription on component unmount
-    return () => {
-      isMounted = false;
-      unsubscribe();
-    };
+  // Set up a subscription to the user store
+  const unsubscribe = user.subscribe((value) => {
+    // Only set authLoading to false if we're mounted
+    if (isMounted) {
+      // Small delay to ensure DOM is ready
+      authLoading = false;
+    }
   });
 
-  async function handleLogin() {
-    try {
-      await signInWithGithub();
-    } catch (error) {
-      console.error('Login error:', error);
-    }
-  }
+  // Clean up subscription on component unmount
+  return () => {
+    isMounted = false;
+    unsubscribe();
+  };
+});
 
-  async function handleLogout() {
-    try {
-      await signOut();
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
+async function handleLogin() {
+  try {
+    await signInWithGithub();
+    mobileMenuOpen = false;
+  } catch (error) {
+    console.error('Login error:', error);
   }
+}
+
+async function handleLogout() {
+  try {
+    await signOut();
+    mobileMenuOpen = false;
+  } catch (error) {
+    console.error('Logout error:', error);
+  }
+}
+
+function toggleMobileMenu() {
+  mobileMenuOpen = !mobileMenuOpen;
+}
+
+// Close mobile menu when navigating to a new page
+$: if ($page) {
+  mobileMenuOpen = false;
+}
 </script>
 
-<header class="sticky top-0 z-50 bg-[var(--color-secondary)] shadow-sm py-3">
-  <div class="max-w-7xl mx-auto px-6 md:px-4 sm:px-3 flex justify-between items-center">
+<header class="sticky top-0 z-50 bg-[var(--color-secondary)] py-3 shadow-sm">
+  <div class="mx-auto flex max-w-7xl items-center justify-between px-3 sm:px-4 md:px-6">
     <div class="flex items-center">
       <a
         href="/"
         aria-label="Home"
-        class="flex items-center gap-2 text-[var(--color-heading)] font-bold text-xl no-underline"
+        class="flex items-center gap-2 text-xl font-bold text-[var(--color-heading)] no-underline"
       >
-        <img src="/favicon.png" alt="AlgoHub Logo" class="w-6 h-6 object-contain" />
+        <img src="/favicon.png" alt="AlgoHub Logo" class="h-6 w-6 object-contain" />
         <span>AlgoHub</span>
       </a>
     </div>
 
-    <nav class="flex items-center gap-6 md:gap-4 sm:gap-3">
-      <ul class="flex list-none m-0 p-0 gap-6 md:gap-4 sm:gap-3">
+    <!-- Mobile menu button -->
+    <button
+      class="flex items-center rounded-md border border-[var(--color-border)] px-2 py-1 text-[var(--color-text)] md:hidden"
+      aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+      on:click={toggleMobileMenu}
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        {#if mobileMenuOpen}
+          <path d="M18 6L6 18M6 6l12 12"></path>
+        {:else}
+          <path d="M3 12h18M3 6h18M3 18h18"></path>
+        {/if}
+      </svg>
+    </button>
+
+    <!-- Desktop navigation -->
+    <nav class="hidden items-center gap-6 md:flex md:gap-4">
+      <ul class="m-0 flex list-none gap-6 p-0 md:gap-4">
         <li
           class="relative {$page.url.pathname === '/'
-            ? "after:content-[''] after:absolute after:-bottom-2 after:left-0 after:w-full after:h-0.5 after:bg-[var(--color-accent)] after:rounded-sm"
+            ? "after:absolute after:-bottom-2 after:left-0 after:h-0.5 after:w-full after:rounded-sm after:bg-[var(--color-accent)] after:content-['']"
             : ''}"
         >
           <a
             href="/"
-            class="text-[var(--color-heading)] font-semibold no-underline transition-colors duration-200 hover:text-[var(--color-accent)] text-base py-2 block"
+            class="block py-2 text-base font-semibold text-[var(--color-heading)] no-underline transition-colors duration-200 hover:text-[var(--color-accent)]"
             >Problems</a
           >
         </li>
         <li
           class="relative {$page.url.pathname === '/about'
-            ? "after:content-[''] after:absolute after:-bottom-2 after:left-0 after:w-full after:h-0.5 after:bg-[var(--color-accent)] after:rounded-sm"
+            ? "after:absolute after:-bottom-2 after:left-0 after:h-0.5 after:w-full after:rounded-sm after:bg-[var(--color-accent)] after:content-['']"
             : ''}"
         >
           <a
             href="/about"
-            class="text-[var(--color-heading)] font-semibold no-underline transition-colors duration-200 hover:text-[var(--color-accent)] text-base py-2 block"
+            class="block py-2 text-base font-semibold text-[var(--color-heading)] no-underline transition-colors duration-200 hover:text-[var(--color-accent)]"
             >About</a
           >
         </li>
       </ul>
       <div
-        class="flex items-center min-w-[70px] justify-end opacity-100 transition-opacity duration-200 {authLoading
-          ? 'opacity-0 invisible'
+        class="flex min-w-[70px] items-center justify-end opacity-100 transition-opacity duration-200 {authLoading
+          ? 'invisible opacity-0'
           : ''}"
       >
         {#if $user}
           <button
-            class="border border-[var(--color-border)] bg-transparent text-[var(--color-text)] rounded px-3 py-1.5 text-sm font-semibold cursor-pointer transition-all duration-200 hover:bg-[color-mix(in_oklab,black_5%,transparent)]"
+            class="cursor-pointer rounded border border-[var(--color-border)] bg-transparent px-3 py-1.5 text-sm font-semibold text-[var(--color-text)] transition-all duration-200 hover:bg-[color-mix(in_oklab,black_5%,transparent)]"
             on:click={handleLogout}
           >
             Logout
           </button>
         {:else}
           <button
-            class="bg-[#4285f4] text-white border border-[#4285f4] rounded px-3 py-1.5 text-sm font-semibold cursor-pointer transition-all duration-200 hover:bg-[#3367d6] hover:border-[#3367d6] shadow-sm hover:shadow"
+            class="cursor-pointer rounded border border-[#4285f4] bg-[#4285f4] px-3 py-1.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:border-[#3367d6] hover:bg-[#3367d6] hover:shadow"
             on:click={handleLogin}
             title="Login with GitHub"
           >
@@ -109,4 +149,68 @@
       </div>
     </nav>
   </div>
+
+  <!-- Mobile menu -->
+  {#if mobileMenuOpen}
+    <div
+      class="mt-3 border-t border-[var(--color-border)] bg-[var(--color-secondary)] px-3 py-4 shadow-md md:hidden"
+    >
+      <nav class="flex flex-col gap-4">
+        <ul class="m-0 flex list-none flex-col gap-4 p-0">
+          <li>
+            <a
+              href="/"
+              class="block py-2 text-base font-semibold text-[var(--color-heading)] no-underline transition-colors duration-200 hover:text-[var(--color-accent)] {$page.url.pathname === '/' ? 'text-[var(--color-accent)]' : ''}"
+              >Problems</a
+            >
+          </li>
+          <li>
+            <a
+              href="/about"
+              class="block py-2 text-base font-semibold text-[var(--color-heading)] no-underline transition-colors duration-200 hover:text-[var(--color-accent)] {$page.url.pathname === '/about' ? 'text-[var(--color-accent)]' : ''}"
+              >About</a
+            >
+          </li>
+        </ul>
+        <div
+          class="mt-2 flex items-center justify-start {authLoading ? 'invisible opacity-0' : ''}"
+        >
+          {#if $user}
+            <button
+              class="cursor-pointer rounded border border-[var(--color-border)] bg-transparent px-3 py-1.5 text-sm font-semibold text-[var(--color-text)] transition-all duration-200 hover:bg-[color-mix(in_oklab,black_5%,transparent)]"
+              on:click={handleLogout}
+            >
+              Logout
+            </button>
+          {:else}
+            <button
+              class="cursor-pointer rounded border border-[#4285f4] bg-[#4285f4] px-3 py-1.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:border-[#3367d6] hover:bg-[#3367d6] hover:shadow"
+              on:click={handleLogin}
+              title="Login with GitHub"
+            >
+              <span>Sign in</span>
+            </button>
+          {/if}
+        </div>
+      </nav>
+    </div>
+  {/if}
 </header>
+
+<style>
+/* Add smooth transitions for mobile menu */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+div.md\:hidden {
+  animation: slideDown 0.2s ease-out;
+}
+</style>

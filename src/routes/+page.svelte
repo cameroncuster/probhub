@@ -9,10 +9,6 @@ let loading: boolean = false;
 let error: string | null = null;
 let userFeedback: Record<string, 'like' | 'dislike' | null> = {};
 
-// Filtering options
-let selectedSource: 'all' | 'codeforces' | 'kattis' = 'all';
-let filteredProblems: Problem[] = [];
-
 // Function to calculate problem score (likes - dislikes)
 function calculateScore(problem: Problem): number {
   return problem.likes - problem.dislikes;
@@ -76,9 +72,6 @@ async function handleLike(problemId: string, isLike: boolean): Promise<void> {
         [problemId]: null
       };
 
-      // Update filtered problems without resorting
-      filteredProblems = filterProblems(problems);
-
       // Save feedback to localStorage
       localStorage.setItem('userFeedback', JSON.stringify(userFeedback));
 
@@ -117,9 +110,6 @@ async function handleLike(problemId: string, isLike: boolean): Promise<void> {
         [problemId]: isLike ? 'like' : 'dislike'
       };
 
-      // Update filtered problems without resorting
-      filteredProblems = filterProblems(problems);
-
       // Save feedback to localStorage
       localStorage.setItem('userFeedback', JSON.stringify(userFeedback));
 
@@ -147,9 +137,6 @@ async function handleLike(problemId: string, isLike: boolean): Promise<void> {
       [problemId]: isLike ? 'like' : 'dislike'
     };
 
-    // Update filtered problems without resorting
-    filteredProblems = filterProblems(problems);
-
     // Save feedback to localStorage
     localStorage.setItem('userFeedback', JSON.stringify(userFeedback));
 
@@ -173,21 +160,12 @@ async function loadProblems() {
 
     // Sort by score only on initial load
     problems = sortProblemsByScore(fetchedProblems);
-
-    // Update filtered problems
-    filteredProblems = filterProblems(problems);
   } catch (e) {
     console.error('Error loading problems:', e);
     error = 'Failed to load problems. Please try again later.';
   } finally {
     loading = false;
   }
-}
-
-// Function to filter problems based on selected source
-function filterProblems(problemsToFilter: Problem[]): Problem[] {
-  if (selectedSource === 'all') return problemsToFilter;
-  return problemsToFilter.filter((problem) => problem.source === selectedSource);
 }
 
 // Load problems on mount
@@ -216,18 +194,19 @@ $: {
 
 <svelte:head>
   <title>AlgoHub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 </svelte:head>
 
-<div class="mx-auto max-w-[1200px] overflow-x-auto px-4 py-6">
+<div class="mx-auto w-full max-w-[1200px] px-3 py-4 sm:px-4 md:py-6">
   {#if loading}
-    <div class="py-8 text-center">
+    <div class="py-6 text-center sm:py-8">
       <div
-        class="mx-auto mb-4 h-9 w-9 animate-spin rounded-full border-4 border-[rgba(0,0,0,0.1)] border-l-[var(--color-primary)]"
+        class="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-[rgba(0,0,0,0.1)] border-l-[var(--color-primary)] sm:h-9 sm:w-9"
       ></div>
       <p>Loading problems...</p>
     </div>
   {:else if error}
-    <div class="py-8 text-center text-red-500">
+    <div class="py-6 text-center text-red-500 sm:py-8">
       <p>{error}</p>
       <button
         class="hover:bg-opacity-90 mt-4 rounded bg-[var(--color-primary)] px-4 py-2 text-white transition-colors"
@@ -235,10 +214,10 @@ $: {
       >
     </div>
   {:else if problems.length === 0}
-    <div class="py-8 text-center text-[var(--color-text-muted)]">
+    <div class="py-6 text-center text-[var(--color-text-muted)] sm:py-8">
       <p>No problems found. Check back later or submit some problems!</p>
     </div>
   {:else}
-    <ProblemTable problems={filteredProblems} userFeedback={userFeedback} onLike={handleLike} />
+    <ProblemTable problems={problems} userFeedback={userFeedback} onLike={handleLike} />
   {/if}
 </div>

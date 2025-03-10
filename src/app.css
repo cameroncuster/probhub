@@ -140,15 +140,15 @@ table a {
   font-weight: 500;
 }
 
-/* Exception for user links in tables */
-.table a.user-link,
-table a.user-link,
+/* User links in tables - keep them purple */
+.table a[href*='github.com'],
+table a[href*='github.com'],
 table td:nth-child(5) a {
   color: var(--color-accent);
 }
 
-.table a.user-link:hover,
-table a.user-link:hover,
+.table a[href*='github.com']:hover,
+table a[href*='github.com']:hover,
 table td:nth-child(5) a:hover {
   color: color-mix(in oklab, var(--color-accent) 80%, white);
 }
