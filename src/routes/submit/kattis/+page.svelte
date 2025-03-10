@@ -6,8 +6,6 @@
     formatKattisUrl,
     extractKattisUrls
   } from '$lib/services/kattis';
-  // Use static image path instead of import
-  const kattisIcon = '/images/kattis.png';
 </script>
 
 <svelte:head>
@@ -17,7 +15,7 @@
 <ProblemSubmitForm
   title="Submit Kattis Problems"
   platformName="Kattis"
-  platformIcon={kattisIcon}
+  platformIcon="/images/kattis.png"
   handlePlaceholder="Enter your Kattis handle (optional)"
   urlsPlaceholder="kattis.com/problems/hello&#10;open.kattis.com/problems/twostones&#10;customscontrols"
   urlsDescription="Enter Kattis problem URLs or problem IDs"

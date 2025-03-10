@@ -47,220 +47,66 @@
   }
 </script>
 
-<header>
-  <div class="container">
-    <div class="logo">
-      <a href="/" aria-label="Home">
-        <img src="/favicon.png" alt="AlgoHub Logo" class="favicon" />
+<header class="sticky top-0 z-50 bg-[var(--color-secondary)] shadow-sm py-3">
+  <div class="max-w-7xl mx-auto px-6 md:px-4 sm:px-3 flex justify-between items-center">
+    <div class="flex items-center">
+      <a
+        href="/"
+        aria-label="Home"
+        class="flex items-center gap-2 text-[var(--color-heading)] font-bold text-xl no-underline"
+      >
+        <img src="/favicon.png" alt="AlgoHub Logo" class="w-6 h-6 object-contain" />
         <span>AlgoHub</span>
       </a>
     </div>
 
-    <nav>
-      <ul>
-        <li class:active={$page.url.pathname === '/'}>
-          <a href="/">Problems</a>
+    <nav class="flex items-center gap-6 md:gap-4 sm:gap-3">
+      <ul class="flex list-none m-0 p-0 gap-6 md:gap-4 sm:gap-3">
+        <li
+          class="relative {$page.url.pathname === '/'
+            ? "after:content-[''] after:absolute after:-bottom-2 after:left-0 after:w-full after:h-0.5 after:bg-[var(--color-accent)] after:rounded-sm"
+            : ''}"
+        >
+          <a
+            href="/"
+            class="text-[var(--color-heading)] font-semibold no-underline transition-colors duration-200 hover:text-[var(--color-accent)] text-base py-2 block"
+            >Problems</a
+          >
         </li>
-        <li class:active={$page.url.pathname === '/about'}>
-          <a href="/about">About</a>
+        <li
+          class="relative {$page.url.pathname === '/about'
+            ? "after:content-[''] after:absolute after:-bottom-2 after:left-0 after:w-full after:h-0.5 after:bg-[var(--color-accent)] after:rounded-sm"
+            : ''}"
+        >
+          <a
+            href="/about"
+            class="text-[var(--color-heading)] font-semibold no-underline transition-colors duration-200 hover:text-[var(--color-accent)] text-base py-2 block"
+            >About</a
+          >
         </li>
       </ul>
-      <div class="auth-buttons" class:hidden={authLoading}>
+      <div
+        class="flex items-center min-w-[70px] justify-end opacity-100 transition-opacity duration-200 {authLoading
+          ? 'opacity-0 invisible'
+          : ''}"
+      >
         {#if $user}
-          <button class="logout-button" on:click={handleLogout}>Logout</button>
+          <button
+            class="border border-[var(--color-border)] bg-transparent text-[var(--color-text)] rounded px-3 py-1.5 text-sm font-semibold cursor-pointer transition-all duration-200 hover:bg-[color-mix(in_oklab,black_5%,transparent)]"
+            on:click={handleLogout}
+          >
+            Logout
+          </button>
         {:else}
-          <button class="login-button" on:click={handleLogin} title="Login with GitHub">
-            <span class="login-text">Sign in</span>
+          <button
+            class="bg-[#4285f4] text-white border border-[#4285f4] rounded px-3 py-1.5 text-sm font-semibold cursor-pointer transition-all duration-200 hover:bg-[#3367d6] hover:border-[#3367d6] shadow-sm hover:shadow"
+            on:click={handleLogin}
+            title="Login with GitHub"
+          >
+            <span>Sign in</span>
           </button>
         {/if}
       </div>
     </nav>
   </div>
 </header>
-
-<style>
-  header {
-    background-color: var(--color-secondary);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    padding: 0.75rem 0;
-  }
-
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 1.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .logo {
-    display: flex;
-    align-items: center;
-  }
-
-  .logo a {
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    color: var(--color-heading);
-    font-weight: 700;
-    font-size: 1.25rem;
-    gap: 0.5rem;
-  }
-
-  .favicon {
-    width: 24px;
-    height: 24px;
-    object-fit: contain;
-  }
-
-  nav {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-  }
-
-  ul {
-    display: flex;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    gap: 1.5rem;
-  }
-
-  li {
-    position: relative;
-  }
-
-  li.active::after {
-    content: '';
-    position: absolute;
-    bottom: -0.5rem;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background-color: var(--color-accent);
-    border-radius: 1px;
-  }
-
-  nav a {
-    color: var(--color-heading);
-    font-weight: 600;
-    text-decoration: none;
-    transition: color 0.2s ease;
-    font-size: 1rem;
-    padding: 0.5rem 0;
-    display: block;
-  }
-
-  a:hover {
-    color: var(--color-accent);
-  }
-
-  .auth-buttons {
-    display: flex;
-    align-items: center;
-    min-width: 70px; /* Ensure consistent width to prevent layout shift */
-    justify-content: flex-end;
-    opacity: 1;
-    transition: opacity 0.2s ease;
-  }
-
-  .auth-buttons.hidden {
-    opacity: 0;
-    visibility: hidden;
-  }
-
-  .login-button,
-  .logout-button {
-    border: none;
-    border-radius: 4px;
-    padding: 0.4rem 0.75rem;
-    font-size: 0.8rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-
-  .login-button {
-    background-color: #4285f4;
-    color: white;
-    border: 1px solid #4285f4;
-    border-radius: 4px;
-    padding: 0.4rem 0.75rem;
-    font-size: 0.8rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-  }
-
-  .login-button:hover {
-    background-color: #3367d6;
-    border-color: #3367d6;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-  }
-
-  .logout-button {
-    background-color: transparent;
-    color: var(--color-text);
-    border: 1px solid var(--color-border);
-  }
-
-  .logout-button:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-    color: var(--color-text);
-  }
-
-  @media (max-width: 768px) {
-    .container {
-      padding: 0 1rem;
-    }
-
-    nav {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    ul {
-      gap: 1rem;
-    }
-
-    .login-button,
-    .logout-button {
-      padding: 0.3rem 0.6rem;
-      font-size: 0.75rem;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .container {
-      padding: 0 0.75rem;
-    }
-
-    .logo span {
-      font-size: 1.1rem;
-    }
-
-    nav {
-      gap: 0.75rem;
-    }
-
-    ul {
-      gap: 0.75rem;
-    }
-
-    nav a {
-      font-size: 0.9rem;
-    }
-  }
-</style>

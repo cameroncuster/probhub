@@ -1,64 +1,112 @@
 @import '@fontsource/fira-mono';
 
-:root {
-  --font-sans:
-    Arial, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
-    'Open Sans', 'Helvetica Neue', sans-serif;
-  --font-mono: 'Fira Mono', monospace;
+@import 'tailwindcss';
 
-  --color-white: #ffffff;
-  --color-black: #000000;
-  --color-primary: #121212;
-  --color-secondary: #1e1e1e;
-  --color-tertiary: #2d2d2d;
-  --color-accent: #7c4dff;
-  --color-heading: rgba(255, 255, 255, 0.87);
-  --color-text: rgba(255, 255, 255, 0.6);
-  --color-text-muted: rgba(255, 255, 255, 0.4);
-  --color-background: rgba(30, 30, 30, 0.7);
-  --color-border: #444444;
-  --color-link: #7c4dff;
+@layer theme {
+  :root {
+    /* Fonts */
+    --font-sans:
+      Arial, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
+      'Open Sans', 'Helvetica Neue', sans-serif;
+    --font-mono: 'Fira Mono', monospace;
 
-  /* Codeforces rating colors */
-  --color-legendary-grandmaster: #ff0000;
-  --color-international-grandmaster: #ff0000;
-  --color-grandmaster: #ff0000;
-  --color-international-master: #ff8c00;
-  --color-master: #ff8c00;
-  --color-candidate-master: #aa00aa;
-  --color-expert: #0000ff;
-  --color-specialist: #03a89e;
-  --color-pupil: #008000;
-  --color-newbie: #808080;
+    /* Colors */
+    --color-white: oklch(1 0 0);
+    --color-black: oklch(0 0 0);
+    --color-primary: oklch(0.12 0 0);
+    --color-secondary: oklch(0.19 0 0);
+    --color-tertiary: oklch(0.28 0 0);
+    --color-accent: oklch(0.65 0.26 296.88);
+    --color-heading: oklch(1 0 0 / 0.87);
+    --color-text: oklch(1 0 0 / 0.6);
+    --color-text-muted: oklch(1 0 0 / 0.4);
+    --color-background: oklch(0.19 0 0 / 0.7);
+    --color-border: oklch(0.44 0 0);
+    --color-link: oklch(0.65 0.26 296.88);
 
-  --column-width: 42rem;
-  --column-margin-top: 4rem;
+    /* Codeforces rating colors */
+    --color-legendary-grandmaster: oklch(0.65 0.27 29.23);
+    --color-international-grandmaster: oklch(0.65 0.27 29.23);
+    --color-grandmaster: oklch(0.65 0.27 29.23);
+    --color-international-master: oklch(0.71 0.19 54.65);
+    --color-master: oklch(0.71 0.19 54.65);
+    --color-candidate-master: oklch(0.55 0.32 328.88);
+    --color-expert: oklch(0.45 0.26 264.05);
+    --color-specialist: oklch(0.6 0.17 196.09);
+    --color-pupil: oklch(0.51 0.18 142.5);
+    --color-newbie: oklch(0.54 0 0);
 
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    /* Spacing */
+    --spacing: 0.25rem;
 
-  --rounded-sm: 0.125rem;
-  --rounded: 0.25rem;
-  --rounded-md: 0.375rem;
-  --rounded-lg: 0.5rem;
-  --rounded-xl: 0.75rem;
-  --rounded-2xl: 1rem;
-  --rounded-full: 9999px;
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+    /* Border radius */
+    --rounded-sm: 0.125rem;
+    --rounded: 0.25rem;
+    --rounded-md: 0.375rem;
+    --rounded-lg: 0.5rem;
+    --rounded-xl: 0.75rem;
+    --rounded-2xl: 1rem;
+    --rounded-full: 9999px;
+  }
 }
 
-@import 'tailwindcss/preflight';
-@import 'tailwindcss/utilities';
-
-/* Fix for images */
-img {
-  max-width: 100%;
-  height: auto;
-  display: inline-block;
+/* Base styles */
+body {
+  min-height: 100vh;
+  margin: 0;
+  background-color: var(--color-primary);
+  color: var(--color-text);
 }
 
-/* Fix for links */
+#svelte {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1,
+h2,
+p {
+  font-weight: normal;
+  color: var(--color-heading);
+}
+
+p {
+  line-height: 1.5;
+}
+
+h1 {
+  font-size: 2rem;
+  text-align: center;
+}
+
+h2 {
+  font-size: 1.25rem;
+}
+
+pre {
+  font-size: 1rem;
+  font-family: var(--font-mono);
+  background-color: color-mix(in oklab, black 30%, transparent);
+  border-radius: 0.25rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  padding: 0.5rem;
+  overflow-x: auto;
+  color: var(--color-heading);
+}
+
+input,
+button {
+  font-size: inherit;
+  font-family: inherit;
+}
+
 a {
   color: var(--color-link);
   text-decoration: none;
@@ -68,120 +116,72 @@ a:hover {
   text-decoration: underline;
 }
 
-@layer base {
-  body {
-    min-height: 100vh;
-    margin: 0;
-    background-color: var(--color-primary);
-    color: var(--color-text);
-  }
+header a[aria-label='Home']:hover {
+  text-decoration: none;
+}
 
-  #svelte {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
+img {
+  max-width: 100%;
+  height: auto;
+  display: inline-block;
+}
 
-  h1,
-  h2,
-  p {
-    font-weight: 400;
-    color: var(--color-heading);
-  }
+/* Component styles */
+.card {
+  background-color: var(--color-secondary);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+}
 
-  p {
-    line-height: 1.5;
-  }
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
 
+.table th {
+  text-align: left;
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--color-tertiary);
+  color: var(--color-heading);
+}
+
+.table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--color-tertiary);
+}
+
+.table tr:hover {
+  background-color: var(--color-tertiary);
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-easy {
+  background-color: oklch(0.73 0.2 142.5);
+  color: white;
+}
+
+.badge-medium {
+  background-color: oklch(0.71 0.19 54.65);
+  color: white;
+}
+
+.badge-hard {
+  background-color: oklch(0.65 0.27 29.23);
+  color: white;
+}
+
+/* Responsive utilities */
+@media (min-width: 720px) {
   h1 {
-    font-size: 2rem;
-    text-align: center;
-  }
-
-  h2 {
-    font-size: 1rem;
-  }
-
-  pre {
-    font-size: 16px;
-    font-family: var(--font-mono);
-    background-color: rgba(0, 0, 0, 0.3);
-    border-radius: 3px;
-    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.25);
-    padding: 0.5em;
-    overflow-x: auto;
-    color: var(--color-heading);
-  }
-
-  input,
-  button {
-    font-size: inherit;
-    font-family: inherit;
-  }
-
-  button:focus:not(:focus-visible) {
-    outline: none;
-  }
-}
-
-@layer components {
-  .card {
-    background-color: var(--color-secondary);
-    border-radius: 8px;
-    padding: 1.5rem;
-    box-shadow: var(--shadow-md);
-    margin-bottom: 1rem;
-  }
-
-  .table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-
-  .table th {
-    text-align: left;
-    padding: 0.75rem;
-    border-bottom: 1px solid var(--color-tertiary);
-    color: var(--color-heading);
-  }
-
-  .table td {
-    padding: 0.75rem;
-    border-bottom: 1px solid var(--color-tertiary);
-  }
-
-  .table tr:hover {
-    background-color: var(--color-tertiary);
-  }
-
-  .badge {
-    display: inline-block;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 600;
-  }
-
-  .badge-easy {
-    background-color: #4caf50;
-    color: white;
-  }
-
-  .badge-medium {
-    background-color: #ff9800;
-    color: white;
-  }
-
-  .badge-hard {
-    background-color: #f44336;
-    color: white;
-  }
-}
-
-@layer utilities {
-  @media (min-width: 720px) {
-    h1 {
-      font-size: 2.4rem;
-    }
+    font-size: 3rem;
   }
 }

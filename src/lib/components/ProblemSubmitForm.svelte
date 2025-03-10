@@ -10,7 +10,7 @@
   // Props
   export let title: string;
   export let platformName: string;
-  export let platformIcon: any = null;
+  export let platformIcon: string | null = null;
   export let handlePlaceholder: string = 'Enter your handle (optional)';
   export let urlsPlaceholder: string = 'Enter problem URLs';
   export let urlsDescription: string = `Enter ${platformName} problem URLs`;
@@ -203,42 +203,49 @@
   }
 </script>
 
-<div class="container">
-  <div class="submit-form">
-    <h1>
+<div class="max-w-4xl mx-auto px-4 py-6 w-full box-border">
+  <div class="bg-[var(--color-secondary)] rounded-lg p-8 shadow-md">
+    <h1
+      class="m-0 mb-8 text-[var(--color-heading)] text-4xl text-center flex items-center justify-center gap-4"
+    >
       {#if platformIcon}
         <img
           src={platformIcon}
           alt={`${platformName} icon`}
-          class="platform-icon"
-          width="24"
-          height="24"
+          class="h-14 w-14 inline-block align-middle"
+          width="56"
+          height="56"
         />
       {/if}
       {title}
     </h1>
 
     {#if checkingAdmin}
-      <div class="loading-message">Checking permissions...</div>
+      <div class="text-center py-4 mb-6 text-blue-400">Checking permissions...</div>
     {:else if error && !processingResults.length}
-      <div class="error-message">{error}</div>
+      <div class="text-center py-4 mb-6 text-red-500">{error}</div>
     {/if}
 
     {#if isAdminUser && !checkingAdmin}
       <form on:submit|preventDefault={processProblems}>
-        <div class="form-group">
-          <label for="handle">{platformName} Handle</label>
+        <div class="mb-6">
+          <label for="handle" class="block mb-2 font-semibold text-[var(--color-heading)]"
+            >{platformName} Handle</label
+          >
           <input
             type="text"
             id="handle"
             bind:value={handle}
             placeholder={handlePlaceholder}
             disabled={loading}
+            class="w-full p-3 border border-[var(--color-border)] rounded-md bg-[var(--color-background)] text-[var(--color-text)] text-base box-border font-inherit placeholder:text-[var(--color-text-muted)] placeholder:opacity-70 disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:border-[var(--color-primary)] focus:shadow-sm"
           />
         </div>
 
-        <div class="form-group">
-          <label for="problemUrls">Problem URLs <span class="required">*</span></label>
+        <div class="mb-6">
+          <label for="problemUrls" class="block mb-2 font-semibold text-[var(--color-heading)]">
+            Problem URLs <span class="text-red-500">*</span>
+          </label>
           <textarea
             id="problemUrls"
             bind:value={problemUrls}
@@ -246,39 +253,52 @@
             required
             disabled={loading}
             rows="8"
+            class="w-full p-3 border border-[var(--color-border)] rounded-md bg-[var(--color-background)] text-[var(--color-text)] text-base box-border font-inherit resize-y min-h-[150px] placeholder:text-[var(--color-text-muted)] placeholder:opacity-70 disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:border-[var(--color-primary)] focus:shadow-sm"
           ></textarea>
-          <small>{urlsDescription}</small>
+          <small class="block mt-2 text-[var(--color-text-muted)] text-sm">{urlsDescription}</small>
         </div>
 
-        <div class="form-actions">
-          <button type="submit" class="submit-button" disabled={loading}>
+        <div>
+          <button
+            type="submit"
+            class="w-full py-3 px-3 bg-[var(--color-primary)] text-white border-none rounded-md text-base font-semibold cursor-pointer transition-colors duration-200 hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed"
+            disabled={loading}
+          >
             {loading ? 'Processing...' : 'Submit Problems'}
           </button>
         </div>
       </form>
 
       {#if processingResults.length > 0}
-        <div class="results">
-          <h2>Results</h2>
-          <div class="results-list">
+        <div class="mt-8">
+          <h2 class="mt-8 mb-4 text-[var(--color-heading)] text-2xl">Results</h2>
+          <div class="flex flex-col gap-2">
             {#each processingResults as result}
               <div
-                class="result-item"
-                class:success={result.status === 'success'}
-                class:error={result.status === 'error'}
+                class="flex justify-between items-center p-3 bg-[var(--color-background)] rounded border-l-4 {result.status ===
+                'success'
+                  ? 'border-l-green-500'
+                  : result.status === 'error'
+                    ? 'border-l-red-500'
+                    : 'border-l-[var(--color-border)]'}"
               >
-                <div class="result-url">
-                  <a href={result.url} target="_blank" rel="noopener noreferrer">
+                <div class="font-medium break-all">
+                  <a
+                    href={result.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-[var(--color-text)] no-underline hover:text-[var(--color-primary)] hover:underline"
+                  >
                     {formatResultUrl(result.url, result.name)}
                   </a>
                 </div>
-                <div class="result-status">
+                <div class="whitespace-nowrap ml-4">
                   {#if result.status === 'pending'}
-                    <span class="pending">Pending</span>
+                    <span class="text-blue-400">Pending</span>
                   {:else if result.status === 'success'}
-                    <span class="success-text">✓ {result.message}</span>
+                    <span class="text-green-500">✓ {result.message}</span>
                   {:else}
-                    <span class="error-text">✗ {result.message}</span>
+                    <span class="text-red-500">✗ {result.message}</span>
                   {/if}
                 </div>
               </div>
@@ -289,214 +309,3 @@
     {/if}
   </div>
 </div>
-
-<style>
-  .container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 1.5rem 1rem;
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  .submit-form {
-    background-color: var(--color-secondary);
-    border-radius: 8px;
-    padding: 2rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-
-  h1 {
-    margin: 0 0 2rem;
-    color: var(--color-heading);
-    font-size: 2rem;
-    text-align: center;
-  }
-
-  h2 {
-    margin: 2rem 0 1rem;
-    color: var(--color-heading);
-    font-size: 1.5rem;
-  }
-
-  .form-group {
-    margin-bottom: 1.5rem;
-  }
-
-  label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-    color: var(--color-heading);
-  }
-
-  .required {
-    color: #f44336;
-  }
-
-  input,
-  textarea {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid var(--color-border);
-    border-radius: 6px;
-    background-color: var(--color-background);
-    color: var(--color-text);
-    font-size: 1rem;
-    box-sizing: border-box;
-    font-family: inherit;
-  }
-
-  input::placeholder,
-  textarea::placeholder {
-    color: var(--color-text-muted);
-    opacity: 0.7;
-  }
-
-  input:disabled,
-  textarea:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    background-color: var(--color-background);
-    color: var(--color-text);
-  }
-
-  textarea {
-    resize: vertical;
-    min-height: 150px;
-  }
-
-  input:focus,
-  textarea:focus {
-    outline: none;
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2);
-  }
-
-  small {
-    display: block;
-    margin-top: 0.5rem;
-    color: var(--color-text-muted);
-    font-size: 0.875rem;
-  }
-
-  .submit-button {
-    width: 100%;
-    padding: 0.75rem;
-    background-color: var(--color-primary);
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s;
-  }
-
-  .submit-button:hover {
-    background-color: var(--color-primary);
-    opacity: 0.9;
-  }
-
-  .submit-button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-
-  .loading-message,
-  .error-message {
-    text-align: center;
-    padding: 1rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .loading-message {
-    color: #2196f3;
-  }
-  .error-message {
-    color: #f44336;
-  }
-
-  .results-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .result-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem 1rem;
-    background-color: var(--color-background);
-    border-radius: 4px;
-    border-left: 4px solid var(--color-border);
-  }
-
-  .result-item.success {
-    border-left-color: #4caf50;
-  }
-  .result-item.error {
-    border-left-color: #f44336;
-  }
-
-  .result-url {
-    font-weight: 500;
-    word-break: break-all;
-  }
-
-  .result-url a {
-    color: var(--color-text);
-    text-decoration: none;
-  }
-
-  .result-url a:hover {
-    color: var(--color-primary);
-    text-decoration: underline;
-  }
-
-  .result-status {
-    white-space: nowrap;
-    margin-left: 1rem;
-  }
-
-  .pending {
-    color: #2196f3;
-  }
-  .success-text {
-    color: #4caf50;
-  }
-  .error-text {
-    color: #f44336;
-  }
-
-  @media (max-width: 768px) {
-    .container {
-      padding: 1rem 0.75rem;
-    }
-    .submit-form {
-      padding: 1.5rem;
-    }
-    h1 {
-      font-size: 1.75rem;
-    }
-
-    .result-item {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.5rem;
-    }
-
-    .result-status {
-      margin-left: 0;
-    }
-  }
-
-  .platform-icon {
-    height: 1.5rem;
-    width: auto;
-    vertical-align: middle;
-    margin-right: 0.5rem;
-    display: inline-block;
-  }
-</style>

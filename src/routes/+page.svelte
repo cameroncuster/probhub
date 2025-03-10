@@ -209,73 +209,27 @@
   <title>AlgoHub</title>
 </svelte:head>
 
-<div class="container">
+<div class="max-w-[1200px] mx-auto px-4 py-6 overflow-x-auto">
   {#if loading}
-    <div class="loading">
-      <div class="spinner"></div>
+    <div class="text-center py-8">
+      <div
+        class="w-9 h-9 border-4 border-[rgba(0,0,0,0.1)] border-l-[var(--color-primary)] rounded-full animate-spin mx-auto mb-4"
+      ></div>
       <p>Loading problems...</p>
     </div>
   {:else if error}
-    <div class="error">
+    <div class="text-center py-8 text-red-500">
       <p>{error}</p>
-      <button on:click={() => window.location.reload()}>Try Again</button>
+      <button
+        class="mt-4 px-4 py-2 bg-[var(--color-primary)] text-white rounded hover:bg-opacity-90 transition-colors"
+        on:click={() => window.location.reload()}>Try Again</button
+      >
     </div>
   {:else if problems.length === 0}
-    <div class="empty-state">
+    <div class="text-center py-8 text-[var(--color-text-muted)]">
       <p>No problems found. Check back later or submit some problems!</p>
     </div>
   {:else}
     <ProblemTable problems={filteredProblems} {userFeedback} onLike={handleLike} />
   {/if}
 </div>
-
-<style>
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 1.5rem 1rem;
-    overflow-x: auto; /* Allow horizontal scrolling for the table */
-  }
-
-  .loading,
-  .error {
-    text-align: center;
-    padding: 2rem;
-  }
-
-  .error {
-    color: #f44336;
-  }
-
-  .empty-state {
-    text-align: center;
-    padding: 2rem;
-    color: var(--color-text-muted);
-  }
-
-  .spinner {
-    border: 4px solid rgba(0, 0, 0, 0.1);
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border-left-color: var(--color-primary);
-    animation: spin 1s linear infinite;
-    margin: 0 auto 1rem;
-  }
-
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-
-  /* Mobile responsiveness */
-  @media (max-width: 768px) {
-    .container {
-      padding: 1rem 0.5rem;
-    }
-  }
-</style>
