@@ -15,8 +15,8 @@ let selectedTopic: string | null = null;
 let sidebarOpen = false; // Default closed on mobile
 let isMobile = false;
 
-// Problem types from classify_problems.py
-const PROBLEM_TYPES = ['geometry', 'string', 'tree', 'math', 'graph', 'queries', 'array', 'misc'];
+// Problem types
+const PROBLEM_TYPES = ['graph', 'array', 'string', 'math', 'tree', 'queries', 'geometry', 'misc'];
 
 // Function to calculate problem score (likes - dislikes)
 function calculateScore(problem: Problem): number {
@@ -60,7 +60,13 @@ function filterProblemsByTopic(topic: string | null): void {
   if (!topic) {
     filteredProblems = [...problems];
   } else {
-    filteredProblems = problems.filter((problem) => problem.type === topic);
+    filteredProblems = problems.filter((problem) => {
+      // If topic is "misc", include problems with no type or with "misc" type
+      if (topic === 'misc') {
+        return !problem.type || problem.type === 'misc';
+      }
+      return problem.type === topic;
+    });
   }
 
   // Auto-close sidebar on mobile after selection
@@ -265,26 +271,26 @@ $: {
 
 <div class="mx-auto w-full max-w-[1200px]">
   {#if loading}
-    <div class="py-6 text-center sm:py-8">
+    <div class="py-2 text-center">
       <div
-        class="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-[rgba(0,0,0,0.1)] border-l-[var(--color-primary)] sm:h-9 sm:w-9"
+        class="mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-4 border-[rgba(0,0,0,0.1)] border-l-[var(--color-primary)] sm:h-9 sm:w-9"
       ></div>
       <p>Loading problems...</p>
     </div>
   {:else if error}
-    <div class="py-6 text-center text-red-500 sm:py-8">
+    <div class="py-2 text-center text-red-500">
       <p>{error}</p>
       <button
-        class="hover:bg-opacity-90 mt-4 rounded bg-[var(--color-primary)] px-4 py-2 text-white transition-colors"
+        class="hover:bg-opacity-90 mt-2 rounded bg-[var(--color-primary)] px-4 py-2 text-white transition-colors"
         on:click={() => window.location.reload()}>Try Again</button
       >
     </div>
   {:else if problems.length === 0}
-    <div class="py-6 text-center text-[var(--color-text-muted)] sm:py-8">
+    <div class="py-2 text-center text-[var(--color-text-muted)]">
       <p>No problems found. Check back later or submit some problems!</p>
     </div>
   {:else}
-    <div class="flex min-h-[calc(100vh-2rem)]">
+    <div class="relative flex min-h-[calc(100vh-2rem)]">
       <!-- Topic Sidebar Component -->
       <TopicSidebar
         topics={PROBLEM_TYPES}
@@ -296,8 +302,16 @@ $: {
       />
 
       <!-- Main content -->
-      <div class="flex-grow px-3 py-4 sm:px-4 md:py-6">
-        <ProblemTable problems={filteredProblems} userFeedback={userFeedback} onLike={handleLike} />
+      <div class="flex w-full flex-1">
+        <div class="w-full md:mr-32 md:ml-32">
+          <div class="problem-table-container w-full px-2 py-1">
+            <ProblemTable
+              problems={filteredProblems}
+              userFeedback={userFeedback}
+              onLike={handleLike}
+            />
+          </div>
+        </div>
       </div>
     </div>
   {/if}
@@ -307,6 +321,14 @@ $: {
 @media (max-width: 767px) {
   :global(body) {
     overflow-x: hidden;
+  }
+}
+
+/* Ensure proper spacing between sidebar and table */
+@media (min-width: 768px) {
+  .problem-table-container {
+    margin: 0 auto;
+    width: 100%;
   }
 }
 </style>

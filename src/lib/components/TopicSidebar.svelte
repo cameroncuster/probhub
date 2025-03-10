@@ -77,9 +77,12 @@ onMount(() => {
     stroke-linecap="round"
     stroke-linejoin="round"
   >
-    <line x1="3" y1="6" x2="21" y2="6"></line>
-    <line x1="3" y1="12" x2="21" y2="12"></line>
-    <line x1="3" y1="18" x2="21" y2="18"></line>
+    {#if isOpen}
+      <path d="M18 6L6 18M6 6l12 12" />
+    {:else}
+      <!-- Filter icon -->
+      <path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z" />
+    {/if}
   </svg>
 </button>
 
@@ -95,26 +98,28 @@ onMount(() => {
 {/if}
 
 <!-- Desktop sidebar (always visible) -->
-<div class="hidden md:block md:w-64 md:flex-shrink-0">
-  <div class="h-full border-r border-[var(--color-border)] pr-6">
-    <div class="sticky top-4 py-4">
-      <div class="space-y-1">
+<div
+  class="fixed top-[80px] bottom-0 left-0 hidden w-64 border-r border-[var(--color-border)] bg-[var(--color-primary)] md:block"
+>
+  <div class="h-full">
+    <div class="sticky top-4">
+      <div class="w-full space-y-1 p-4">
         <button
           class={`w-full rounded-md px-3 py-2 text-left transition-colors ${
             selectedTopic === null
-              ? 'bg-[var(--color-primary)] text-white'
+              ? 'bg-[var(--color-secondary)] text-white'
               : 'text-[var(--color-text)] hover:bg-[var(--color-tertiary)]'
           }`}
           on:click={() => onSelectTopic(null)}
         >
-          All Topics
+          All
         </button>
 
         {#each topics as topic}
           <button
             class={`w-full rounded-md px-3 py-2 text-left transition-colors ${
               selectedTopic === topic
-                ? 'bg-[var(--color-primary)] text-white'
+                ? 'bg-[var(--color-secondary)] text-white'
                 : 'text-[var(--color-text)] hover:bg-[var(--color-tertiary)]'
             }`}
             on:click={() => onSelectTopic(topic)}
@@ -162,5 +167,18 @@ onMount(() => {
 </div>
 
 <style>
-/* Add any component-specific styles here */
+/* Add responsive styles for the sidebar */
+@media (max-width: 768px) {
+  /* Mobile styles */
+  :global(body) {
+    padding-bottom: 5rem; /* Add padding for the floating button */
+  }
+}
+
+/* Ensure sidebar has proper width and doesn't overlap */
+@media (min-width: 768px) {
+  :global(.md\:ml-64) {
+    margin-left: 16rem !important; /* 64px = 16rem */
+  }
+}
 </style>
