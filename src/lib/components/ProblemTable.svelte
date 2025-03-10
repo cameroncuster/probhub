@@ -1,7 +1,8 @@
 <script lang="ts">
   import type { Problem } from '$lib/services/problem';
-  import codeforcesLogo from '../../assets/codeforces.png';
-  import kattisLogo from '../../assets/kattis.png';
+  // Use static image paths instead of imports
+  const codeforcesLogo = '/images/codeforces.png';
+  const kattisLogo = '/images/kattis.png';
 
   // Props
   export let problems: Problem[] = [];
@@ -84,7 +85,7 @@
               class="rating-badge tooltip {isTopRow(index)
                 ? 'tooltip-bottom'
                 : ''} {problem.source === 'codeforces' ? 'tooltip-no-cursor' : ''}"
-              style="background-color: var(--{getRatingColor(problem.difficulty)}-color)"
+              style="background-color: var(--color-{getRatingColor(problem.difficulty)})"
             >
               {problem.difficulty}
               <span class="tooltip-text {problem.source === 'codeforces' ? 'tooltip-compact' : ''}"
@@ -170,13 +171,13 @@
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     margin-top: 1rem;
-    background-color: var(--secondary-color);
+    background-color: var(--color-secondary);
   }
 
   table {
     width: 100%;
     border-collapse: collapse;
-    background-color: var(--secondary-color);
+    background-color: var(--color-secondary);
     overflow: hidden;
   }
 
@@ -184,12 +185,12 @@
   td {
     padding: 0.8rem;
     text-align: left;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--color-border);
   }
 
   th {
     font-weight: bold;
-    background-color: var(--tertiary-color);
+    background-color: var(--color-tertiary);
     position: sticky;
     top: 0;
     z-index: 10;
@@ -200,7 +201,7 @@
   }
 
   tr:hover {
-    background-color: rgba(var(--primary-color-rgb), 0.05);
+    background-color: rgba(0, 0, 0, 0.05);
   }
 
   /* Fixed column widths */
@@ -248,12 +249,12 @@
     display: inline-block;
     padding: 0.2rem 0.5rem;
     border-radius: 4px;
-    background-color: var(--tertiary-color);
+    background-color: var(--color-tertiary);
     font-size: 0.85rem;
   }
 
   .topic-badge.empty {
-    color: var(--text-muted-color);
+    color: var(--color-text-muted);
     background-color: transparent;
   }
 
@@ -289,17 +290,17 @@
     align-items: center;
     gap: 0.3rem;
     background: none;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--color-border);
     border-radius: 4px;
     padding: 0.3rem 0.5rem;
     cursor: pointer;
     transition: all 0.2s;
-    color: var(--text-color);
+    color: var(--color-text);
   }
 
   .like-button svg,
   .dislike-button svg {
-    stroke: var(--text-color);
+    stroke: var(--color-text);
   }
 
   .like-button:hover {
@@ -359,8 +360,8 @@
   .tooltip .tooltip-text {
     visibility: hidden;
     width: 280px;
-    background-color: var(--secondary-color);
-    color: var(--text-color);
+    background-color: var(--color-secondary);
+    color: var(--color-text);
     text-align: left;
     border-radius: 6px;
     padding: 10px;
@@ -372,7 +373,7 @@
     opacity: 0;
     transition: opacity 0.3s;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--color-border);
     font-weight: normal;
     font-size: 0.8rem;
     white-space: pre-line;
@@ -396,7 +397,7 @@
     margin-left: -5px;
     border-width: 5px;
     border-style: solid;
-    border-color: var(--secondary-color) transparent transparent transparent;
+    border-color: var(--color-secondary) transparent transparent transparent;
   }
 
   .tooltip:hover .tooltip-text {
@@ -413,7 +414,7 @@
   .tooltip.tooltip-bottom .tooltip-text::after {
     top: auto;
     bottom: 100%;
-    border-color: transparent transparent var(--secondary-color) transparent;
+    border-color: transparent transparent var(--color-secondary) transparent;
   }
 
   /* Mobile responsiveness */

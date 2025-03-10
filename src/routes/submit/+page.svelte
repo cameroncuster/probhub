@@ -6,8 +6,9 @@
   import { supabase } from '$lib/services/database';
   import type { Unsubscriber } from 'svelte/store';
 
-  import codeforcesLogo from '../../assets/codeforces.png';
-  import kattisLogo from '../../assets/kattis.png';
+  // Use static image paths instead of imports
+  const codeforcesLogo = '/images/codeforces.png';
+  const kattisLogo = '/images/kattis.png';
 
   let isAdminUser = false;
   let checkingAdmin = true;
@@ -90,7 +91,7 @@
   }
 
   .submit-options {
-    background-color: var(--secondary-color);
+    background-color: var(--color-secondary);
     border-radius: 8px;
     padding: 2.5rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -100,7 +101,7 @@
 
   h1 {
     margin-top: 0;
-    color: var(--heading-color);
+    color: var(--color-heading);
     font-size: 2rem;
     margin-bottom: 2rem;
     text-align: center;
@@ -119,18 +120,18 @@
     align-items: center;
     gap: 1.5rem;
     padding: 1.5rem;
-    background-color: var(--background-color);
-    border: 1px solid var(--border-color);
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
     border-radius: 8px;
     text-decoration: none;
-    color: var(--text-color);
+    color: var(--color-text);
     transition: all 0.2s;
   }
 
   .platform-button:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-color: var(--primary-color);
+    border-color: var(--color-primary);
   }
 
   .platform-icon {
@@ -142,7 +143,7 @@
   .platform-info h2 {
     margin: 0;
     font-size: 1.25rem;
-    color: var(--heading-color);
+    color: var(--color-heading);
   }
 
   .loading-message {

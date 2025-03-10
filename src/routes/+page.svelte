@@ -250,7 +250,7 @@
   .empty-state {
     text-align: center;
     padding: 2rem;
-    color: var(--text-muted);
+    color: var(--color-text-muted);
   }
 
   .spinner {
@@ -258,7 +258,7 @@
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    border-left-color: var(--primary-color);
+    border-left-color: var(--color-primary);
     animation: spin 1s linear infinite;
     margin: 0 auto 1rem;
   }

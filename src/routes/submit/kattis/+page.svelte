@@ -6,7 +6,8 @@
     formatKattisUrl,
     extractKattisUrls
   } from '$lib/services/kattis';
-  import kattisIcon from '../../../assets/kattis.png';
+  // Use static image path instead of import
+  const kattisIcon = '/images/kattis.png';
 </script>
 
 <svelte:head>

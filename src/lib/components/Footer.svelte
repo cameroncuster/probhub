@@ -39,7 +39,7 @@
 
 <style>
   footer {
-    background-color: var(--secondary-color);
+    background-color: var(--color-secondary);
     padding: 1.5rem 0;
     margin-top: auto;
     border-top: 1px solid rgba(0, 0, 0, 0.1);
@@ -58,7 +58,7 @@
   }
 
   .copyright {
-    color: var(--text-color);
+    color: var(--color-text);
     font-size: 0.9rem;
   }
 
@@ -71,14 +71,14 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: var(--text-color);
+    color: var(--color-text);
     text-decoration: none;
     font-size: 0.9rem;
     transition: color 0.2s ease;
   }
 
   .links a:hover {
-    color: var(--accent-color);
+    color: var(--color-accent);
   }
 
   @media (max-width: 768px) {

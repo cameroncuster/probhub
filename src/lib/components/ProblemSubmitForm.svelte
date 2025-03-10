@@ -207,7 +207,13 @@
   <div class="submit-form">
     <h1>
       {#if platformIcon}
-        <img src={platformIcon} alt={`${platformName} icon`} class="platform-icon" />
+        <img
+          src={platformIcon}
+          alt={`${platformName} icon`}
+          class="platform-icon"
+          width="24"
+          height="24"
+        />
       {/if}
       {title}
     </h1>
@@ -294,7 +300,7 @@
   }
 
   .submit-form {
-    background-color: var(--secondary-color);
+    background-color: var(--color-secondary);
     border-radius: 8px;
     padding: 2rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -302,14 +308,14 @@
 
   h1 {
     margin: 0 0 2rem;
-    color: var(--heading-color);
+    color: var(--color-heading);
     font-size: 2rem;
     text-align: center;
   }
 
   h2 {
     margin: 2rem 0 1rem;
-    color: var(--heading-color);
+    color: var(--color-heading);
     font-size: 1.5rem;
   }
 
@@ -321,7 +327,7 @@
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 600;
-    color: var(--heading-color);
+    color: var(--color-heading);
   }
 
   .required {
@@ -332,10 +338,10 @@
   textarea {
     width: 100%;
     padding: 0.75rem;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--color-border);
     border-radius: 6px;
-    background-color: var(--background-color);
-    color: var(--text-color);
+    background-color: var(--color-background);
+    color: var(--color-text);
     font-size: 1rem;
     box-sizing: border-box;
     font-family: inherit;
@@ -343,7 +349,7 @@
 
   input::placeholder,
   textarea::placeholder {
-    color: var(--text-muted);
+    color: var(--color-text-muted);
     opacity: 0.7;
   }
 
@@ -351,8 +357,8 @@
   textarea:disabled {
     opacity: 0.6;
     cursor: not-allowed;
-    background-color: var(--background-color);
-    color: var(--text-color);
+    background-color: var(--color-background);
+    color: var(--color-text);
   }
 
   textarea {
@@ -363,21 +369,21 @@
   input:focus,
   textarea:focus {
     outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.2);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2);
   }
 
   small {
     display: block;
     margin-top: 0.5rem;
-    color: var(--text-muted);
+    color: var(--color-text-muted);
     font-size: 0.875rem;
   }
 
   .submit-button {
     width: 100%;
     padding: 0.75rem;
-    background-color: var(--primary-color);
+    background-color: var(--color-primary);
     color: white;
     border: none;
     border-radius: 6px;
@@ -388,7 +394,8 @@
   }
 
   .submit-button:hover {
-    background-color: var(--primary-color-dark);
+    background-color: var(--color-primary);
+    opacity: 0.9;
   }
 
   .submit-button:disabled {
@@ -421,9 +428,9 @@
     justify-content: space-between;
     align-items: center;
     padding: 0.75rem 1rem;
-    background-color: var(--background-color);
+    background-color: var(--color-background);
     border-radius: 4px;
-    border-left: 4px solid var(--border-color);
+    border-left: 4px solid var(--color-border);
   }
 
   .result-item.success {
@@ -439,12 +446,12 @@
   }
 
   .result-url a {
-    color: var(--text-color);
+    color: var(--color-text);
     text-decoration: none;
   }
 
   .result-url a:hover {
-    color: var(--primary-color);
+    color: var(--color-primary);
     text-decoration: underline;
   }
 
@@ -490,5 +497,6 @@
     width: auto;
     vertical-align: middle;
     margin-right: 0.5rem;
+    display: inline-block;
   }
 </style>

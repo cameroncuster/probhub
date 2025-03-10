@@ -6,7 +6,8 @@
     formatCodeforcesUrl,
     extractCodeforcesUrls
   } from '$lib/services/codeforces';
-  import codeforcesIcon from '../../../assets/codeforces.png';
+  // Use static image path instead of import
+  const codeforcesIcon = '/images/codeforces.png';
 </script>
 
 <svelte:head>

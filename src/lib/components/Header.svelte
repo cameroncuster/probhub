@@ -80,7 +80,7 @@
 
 <style>
   header {
-    background-color: var(--secondary-color);
+    background-color: var(--color-secondary);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     position: sticky;
     top: 0;
@@ -106,7 +106,7 @@
     display: flex;
     align-items: center;
     text-decoration: none;
-    color: var(--heading-color);
+    color: var(--color-heading);
     font-weight: 700;
     font-size: 1.25rem;
     gap: 0.5rem;
@@ -143,12 +143,12 @@
     left: 0;
     width: 100%;
     height: 2px;
-    background-color: var(--accent-color);
+    background-color: var(--color-accent);
     border-radius: 1px;
   }
 
   nav a {
-    color: var(--heading-color);
+    color: var(--color-heading);
     font-weight: 600;
     text-decoration: none;
     transition: color 0.2s ease;
@@ -158,7 +158,7 @@
   }
 
   a:hover {
-    color: var(--accent-color);
+    color: var(--color-accent);
   }
 
   .auth-buttons {
@@ -210,13 +210,13 @@
 
   .logout-button {
     background-color: transparent;
-    color: var(--text-color);
-    border: 1px solid var(--border-color);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
   }
 
   .logout-button:hover {
     background-color: rgba(0, 0, 0, 0.05);
-    color: var(--text-color);
+    color: var(--color-text);
   }
 
   @media (max-width: 768px) {
